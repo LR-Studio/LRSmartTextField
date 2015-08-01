@@ -1,15 +1,15 @@
 //
 //  ViewController.h
-//  LRTextFieldExample
+//  LRTextField
 //
-//  Created by Chao Li on 8/1/15.
-//  Copyright (c) 2015 LR Studio. All rights reserved.
+//  Created by Chao on 7/26/15.
+//  Copyright (c) 2015 Chao. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
-
-@interface ViewController : UIViewController
-
+#import "LRTextField.h"
+@interface ViewController : UIViewController <UITextFieldDelegate>
+@property (weak, nonatomic) IBOutlet LRTextField *test;
 
 @end
 

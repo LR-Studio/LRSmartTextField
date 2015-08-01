@@ -1,13 +1,13 @@
 //
 //  ViewController.m
-//  LRTextFieldExample
+//  LRTextField
 //
-//  Created by Chao Li on 8/1/15.
-//  Copyright (c) 2015 LR Studio. All rights reserved.
+//  Created by Chao on 7/26/15.
+//  Copyright (c) 2015 Chao. All rights reserved.
 //
 
 #import "ViewController.h"
-
+#import "LRTextField.h"
 @interface ViewController ()
 
 @end
@@ -16,6 +16,11 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    //self.test.format = @"(###)###-####";
+    self.test.format = @"#######";
+    self.test.delegate = self;
+    //self.test.onlyNumber = YES;
+    
     // Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -23,5 +28,15 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
+    return  [_test shouldChangeCharactersInRange:range replacementString:string];
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    return [textField resignFirstResponder];
+}
+
 
 @end

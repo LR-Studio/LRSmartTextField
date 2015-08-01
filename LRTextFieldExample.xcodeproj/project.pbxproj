@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		56A3FAC81B6CB09200F70843 /* LRTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = 56A3FAC71B6CB09200F70843 /* LRTextField.m */; };
+		56A3FACC1B6D416B00F70843 /* 20100722211911-872914855.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 56A3FACB1B6D416B00F70843 /* 20100722211911-872914855.jpg */; };
 		E585FF151B6CA668003CBD4A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E585FF141B6CA668003CBD4A /* main.m */; };
 		E585FF181B6CA668003CBD4A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E585FF171B6CA668003CBD4A /* AppDelegate.m */; };
 		E585FF1B1B6CA668003CBD4A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E585FF1A1B6CA668003CBD4A /* ViewController.m */; };
@@ -27,6 +29,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		56A3FAC61B6CB09200F70843 /* LRTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LRTextField.h; path = LRTextField/LRTextField.h; sourceTree = "<group>"; };
+		56A3FAC71B6CB09200F70843 /* LRTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LRTextField.m; path = LRTextField/LRTextField.m; sourceTree = "<group>"; };
+		56A3FACB1B6D416B00F70843 /* 20100722211911-872914855.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "20100722211911-872914855.jpg"; sourceTree = "<group>"; };
 		E585FF0F1B6CA668003CBD4A /* LRTextFieldExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LRTextFieldExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E585FF131B6CA668003CBD4A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E585FF141B6CA668003CBD4A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -123,6 +128,9 @@
 		E585FF381B6CA697003CBD4A /* LRTextField */ = {
 			isa = PBXGroup;
 			children = (
+				56A3FACB1B6D416B00F70843 /* 20100722211911-872914855.jpg */,
+				56A3FAC61B6CB09200F70843 /* LRTextField.h */,
+				56A3FAC71B6CB09200F70843 /* LRTextField.m */,
 			);
 			name = LRTextField;
 			sourceTree = "<group>";
@@ -209,6 +217,7 @@
 			files = (
 				E585FF1E1B6CA668003CBD4A /* Main.storyboard in Resources */,
 				E585FF231B6CA668003CBD4A /* LaunchScreen.xib in Resources */,
+				56A3FACC1B6D416B00F70843 /* 20100722211911-872914855.jpg in Resources */,
 				E585FF201B6CA668003CBD4A /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -230,6 +239,7 @@
 				E585FF1B1B6CA668003CBD4A /* ViewController.m in Sources */,
 				E585FF181B6CA668003CBD4A /* AppDelegate.m in Sources */,
 				E585FF151B6CA668003CBD4A /* main.m in Sources */,
+				56A3FAC81B6CB09200F70843 /* LRTextField.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -426,6 +436,7 @@
 				E585FF341B6CA668003CBD4A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		E585FF351B6CA668003CBD4A /* Build configuration list for PBXNativeTarget "LRTextFieldExampleTests" */ = {
 			isa = XCConfigurationList;
@@ -434,6 +445,7 @@
 				E585FF371B6CA668003CBD4A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
