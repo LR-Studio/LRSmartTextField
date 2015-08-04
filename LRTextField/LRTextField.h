@@ -36,6 +36,15 @@ IB_DESIGNABLE
 @property (nonatomic) UIColor *placeholderColor;
 
 
+//proptery for validation event
+
+typedef BOOL (^ValidationBlock)(NSString *text);
+@property (nonatomic) IBInspectable BOOL validate;
+
+
+- (void)setTextValidationBlock:(ValidationBlock)block
+                        isSync:(BOOL)sync;
+
 - (BOOL)shouldChangeCharactersInRange:(NSRange)range
                     replacementString:(NSString *)string;
 

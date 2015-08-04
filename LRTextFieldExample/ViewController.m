@@ -18,7 +18,7 @@
     [super viewDidLoad];
     //self.test.format = @"(###)###-####";
     self.test.format = @"#######";
-    self.test.delegate = self;
+    //self.test.delegate = self;
     //self.test.onlyNumber = YES;
     
     // Do any additional setup after loading the view, typically from a nib.
@@ -36,6 +36,11 @@
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     return [textField resignFirstResponder];
+}
+
+
+- (void)textFieldDidEndEditing:(UITextField *)textField{
+  
 }
 
 

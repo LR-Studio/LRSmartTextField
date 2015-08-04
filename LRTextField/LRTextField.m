@@ -10,10 +10,15 @@
 
 @interface LRTextField ()
 @property (nonatomic) UIFont *placeholderFont;
-
+@property (nonatomic) CGRect validationFrame;
+@property (nonatomic) BOOL sync;
+@property (nonatomic) BOOL leftvalidtion;
+//@property (nonatomic) ValidationBlock validateBlock;
 @end
 
-@implementation LRTextField
+@implementation LRTextField{
+    ValidationBlock _validateBlock;
+}
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -44,9 +49,28 @@
     self.placeholderLabel.font = [self defaultFont];
     
     // Create validation button
-    self.validationLabel = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self addSubview:self.validationLabel];
+    // set for left
     
+    self.validationLabel = [UIButton buttonWithType:UIButtonTypeCustom];
+    // Default is left validtion123
+    self.leftvalidtion = YES;
+    
+    if (self.leftvalidtion)
+        self.validationLabel.frame = CGRectMake(self.layer.borderWidth,
+                                                0,
+                                                self.frame.size.height - self.layer.borderWidth,
+                                                self.frame.size.height - self.layer.borderWidth);
+    else
+        self.validationLabel.frame = CGRectMake(self.frame.size.width - self.frame.size.height,
+                                                0,
+                                                self.frame.size.height - self.layer.borderWidth,
+                                                self.frame.size.height - self.layer.borderWidth);
+    
+    self.validationFrame = self.validationLabel.frame;
+    self.sync = NO;
+    [self addTarget:self action:@selector(TextValidation) forControlEvents:UIControlEventEditingDidEnd];
+    [self addTarget:self action:@selector(TextValidation) forControlEvents:UIControlEventEditingDidBegin];
+    _validateBlock = ^BOOL(NSString *text) { sleep(2); return NO; };
 }
 
 - (UIFont *)defaultFont
@@ -179,14 +203,109 @@
 }
 
 /* Testing for validation*/
-
-- (void)textFieldDidEndEditing:(UITextField *)textField{
-    [self updateLeftValidationBlock:YES];
+- (void)setTextValidationBlock:(ValidationBlock)block
+                        isSync:(BOOL)sync{
+    _validateBlock = block;
+    self.sync = sync;
 }
 
-- (void)updateLeftValidationBlock:(BOOL)animated{
-    self.validationLabel.frame = CGRectMake(0, 0, 10, 10);
-    [self.validationLabel setImage: [UIImage imageNamed:@"20100722211911-872914855.jpg"] forState:UIControlStateNormal];
+- (void) TextValidation {
+    if (self.text.length == 0 || self.isFirstResponder){
+        [self toggleText:NO];
+        return;
+    }
+
+    if (self.sync){
+        if (!_validateBlock(self.text))
+            [self toggleText:YES];
+        else
+            [self toggleText:NO];
+    }
+    else{
+        UIActivityIndicatorView *ActivityView = [[UIActivityIndicatorView alloc]
+                                         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        if (self.leftvalidtion){
+            self.leftView = ActivityView;
+        }
+        else{
+            self.rightView = ActivityView;
+        }
+        ActivityView.frame = self.validationFrame;
+        [ActivityView startAnimating];
+
+        __weak typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            BOOL valid = _validateBlock(weakSelf.text);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [ActivityView stopAnimating];
+                if (self.leftvalidtion){
+                    [weakSelf.leftView removeFromSuperview];
+                    weakSelf.leftView = nil;
+                }
+                else{
+                    [weakSelf.rightView removeFromSuperview];
+                    weakSelf.rightView = nil;
+                }
+                if (valid) {
+                    [self toggleText:NO];
+                }
+                else{
+                    [self toggleText:YES];
+                }
+            });
+        });
+    }
+}
+
+
+-(BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
+    return YES;
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+    [self resignFirstResponder];
+    return YES;
+}
+
+-(void)toggleText:(BOOL)show{
+    if(show){
+        UIView *view=[[UIView alloc] init];
+        CGRect rect = self.validationFrame;
+        view.frame=rect;
+        UIImageView * imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"20100722211911-872914855.jpg"]];
+        imageView.frame = view.bounds;
+        [view addSubview:imageView];
+        if (self.leftvalidtion){
+            self.leftViewMode = UITextFieldViewModeAlways;
+            self.leftView = view;
+        }
+        else{
+            self.rightViewMode = UITextFieldViewModeAlways;
+            self.rightView = view;
+        }
+        [UIView animateWithDuration:.3 animations:^{
+            if (self.leftvalidtion)
+                self.leftView.alpha = 1.0;
+            else
+                self.rightView.alpha = 1.0;
+        }];
+    }else{
+        [UIView animateWithDuration:.3 animations:^{
+            if (self.leftvalidtion)
+                self.leftView.alpha = 0.0;
+            else
+                self.rightView.alpha = 0.0;
+        } completion:^(BOOL finished) {
+            if (self.leftvalidtion){
+                [self.leftView removeFromSuperview];
+                self.leftView = nil;
+            }
+            else{
+                [self.rightView removeFromSuperview];
+                self.rightView = nil;
+            }
+        }];
+    }
 }
 
 

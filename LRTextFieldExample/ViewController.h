@@ -9,7 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "LRTextField.h"
 @interface ViewController : UIViewController <UITextFieldDelegate>
+
 @property (weak, nonatomic) IBOutlet LRTextField *test;
+
 
 @end
 
