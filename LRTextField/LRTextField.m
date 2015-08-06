@@ -12,11 +12,16 @@
 #define fontScale 0.7f
 @property (nonatomic) UIFont *placeholderFont;
 @property (nonatomic) CGRect validationFrame;
-@property (nonatomic) BOOL leftvalidation;
+@property (nonatomic, strong) validationBlock validateBlock;
 @end
 
-@implementation LRTextField{
-    ValidationBlock _validateBlock;
+@implementation LRTextField
+
+- (instancetype) init
+{
+    self = [self initWithFrame:CGRectZero];
+    [self commonInit];
+    return self;
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder
@@ -34,6 +39,28 @@
 }
 
 // An common init function
+- (instancetype) initWithFormatType:(LRTextFieldFormatType)type
+{
+    return [self initWithFormatType:type effectStyle:LRTextFieldEffectStyleUp validationType:LRTextFieldValidationTypeDefault];
+}
+
+- (instancetype) initWithEffectStyle:(LRTextFieldEffectStyle)style
+{
+    return [self initWithFormatType:LRTextFieldFormatTypeDefault effectStyle:style validationType:LRTextFieldValidationTypeDefault];
+}
+
+- (instancetype) initWithValidationType:(LRTextFieldValidationType)validationType
+{
+    return [self initWithFormatType:LRTextFieldFormatTypeDefault effectStyle:LRTextFieldEffectStyleDefault validationType:validationType];
+}
+
+- (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style validationType:(LRTextFieldValidationType)validationType
+{
+    self = [super initWithFrame:CGRectZero];
+    [self commonInit];
+    return self;
+}
+
 - (void) commonInit{
     self.delegate = self;
     self.Xpadding = 0;
@@ -210,7 +237,7 @@
 // set validation block and mode
 - (void)setTextValidationBlock:(ValidationBlock)block
                         isSync:(BOOL)sync{
-    _validateBlock = block;
+    self.validateBlock = block;
     self.sync = sync;
 }
 

@@ -8,6 +8,30 @@
 
 #import <UIKit/UIKit.h>
 
+typedef BOOL (^validationBlock)(NSString *text);
+
+typedef NS_ENUM(NSInteger, LRTextFieldFormatType)
+{
+    LRTextFieldFormatTypeDefault,
+    LRTextFieldFormatTypeEmail,
+    LRTextFieldFormatTypePhone,
+};
+
+typedef NS_ENUM(NSInteger, LRTextFieldEffectStyle)
+{
+    LRTextFieldEffectStyleDefault,
+    LRTextFieldEffectStyleUp,
+    LRTextFieldEffectStyleRight,
+};
+
+typedef NS_ENUM(NSInteger, LRTextFieldValidationType)
+{
+    LRTextFieldValidationTypeDefault,
+    LRTextFieldValidationTypeLeft,
+    LRTextFieldValidationTypeRight,
+    LRTextFieldValidationTypeColor,
+};
+
 IB_DESIGNABLE
 @interface LRTextField : UITextField <UITextFieldDelegate>
 
@@ -35,7 +59,6 @@ IB_DESIGNABLE
 @property (nonatomic) BOOL withAnimation;
 @property (nonatomic) UIColor *placeholderColor;
 
-
 /*
  *proptery for validation event
  */
@@ -46,9 +69,24 @@ typedef BOOL (^ValidationBlock)(NSString *text);
 @property (nonatomic) IBInspectable BOOL validate;
 // To set whether the validation block is running in sync mode or async mode
 @property (nonatomic) BOOL sync;
-
-- (void)setTextValidationBlock:(ValidationBlock)block
+// To set whether the validation block showed on the left or right
+@property (nonatomic) BOOL leftvalidation;
+//proptery for validation event
+- (void)setTextValidationBlock:(validationBlock)block
                         isSync:(BOOL)sync;
+
+
+@property (nonatomic, assign) LRTextFieldFormatType type;
+@property (nonatomic, assign) LRTextFieldEffectStyle style;
+@property (nonatomic, assign) LRTextFieldValidationType validationType;
+@property (nonatomic, assign) IBInspectable BOOL enableValidation;
+
+- (instancetype) initWithFormatType:(LRTextFieldFormatType)type;
+- (instancetype) initWithEffectStyle:(LRTextFieldEffectStyle)style;
+- (instancetype) initWithValidationType:(LRTextFieldValidationType)validationType;
+- (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style validationType:(LRTextFieldValidationType)validationType;
+
+
 
 - (BOOL)shouldChangeCharactersInRange:(NSRange)range
                     replacementString:(NSString *)string;
