@@ -59,6 +59,29 @@ IB_DESIGNABLE
 @property (nonatomic) BOOL withAnimation;
 @property (nonatomic) UIColor *placeholderColor;
 
+<<<<<<< HEAD
+=======
+/*
+ *proptery for validation event
+ */
+
+// Validation block, default return YES. User needs to set his own validation logic
+typedef BOOL (^ValidationBlock)(NSString *text);
+// Whether the validate feature is turned on
+@property (nonatomic) IBInspectable BOOL validate;
+// To set whether the validation block is running in sync mode or async mode
+@property (nonatomic) BOOL sync;
+// To set whether the validation block showed on the left or right
+@property (nonatomic) BOOL leftvalidation;
+//proptery for validation event
+- (void)setTextValidationBlock:(validationBlock)block
+                        isSync:(BOOL)sync;
+
+
+@property (nonatomic, assign) LRTextFieldFormatType type;
+@property (nonatomic, assign) LRTextFieldEffectStyle style;
+@property (nonatomic, assign) LRTextFieldValidationType validationType;
+>>>>>>> a2c524a827b0934fd33c59f04076e9d306ce8e26
 @property (nonatomic, assign) IBInspectable BOOL enableValidation;
 
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type;
@@ -66,10 +89,7 @@ IB_DESIGNABLE
 - (instancetype) initWithValidationType:(LRTextFieldValidationType)validationType;
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style validationType:(LRTextFieldValidationType)validationType;
 
-//proptery for validation event
 
-- (void)setTextValidationBlock:(validationBlock)block
-                        isSync:(BOOL)sync;
 
 - (BOOL)shouldChangeCharactersInRange:(NSRange)range
                     replacementString:(NSString *)string;
