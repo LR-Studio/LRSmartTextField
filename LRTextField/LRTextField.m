@@ -9,11 +9,10 @@
 #import "LRTextField.h"
 
 @interface LRTextField ()
+#define fontScale 0.7f
 @property (nonatomic) UIFont *placeholderFont;
 @property (nonatomic) CGRect validationFrame;
-@property (nonatomic) BOOL sync;
-@property (nonatomic) BOOL leftvalidtion;
-//@property (nonatomic) ValidationBlock validateBlock;
+@property (nonatomic) BOOL leftvalidation;
 @end
 
 @implementation LRTextField{
@@ -34,6 +33,7 @@
     return self;
 }
 
+// An common init function
 - (void) commonInit{
     self.delegate = self;
     self.Xpadding = 0;
@@ -52,10 +52,11 @@
     // set for left
     
     self.validationLabel = [UIButton buttonWithType:UIButtonTypeCustom];
-    // Default is left validtion123
-    self.leftvalidtion = YES;
     
-    if (self.leftvalidtion)
+    // Set default validation
+    self.leftvalidation = NO;
+    
+    if (self.leftvalidation)
         self.validationLabel.frame = CGRectMake(self.layer.borderWidth,
                                                 0,
                                                 self.frame.size.height - self.layer.borderWidth,
@@ -67,12 +68,16 @@
                                                 self.frame.size.height - self.layer.borderWidth);
     
     self.validationFrame = self.validationLabel.frame;
-    self.sync = NO;
+    self.sync = YES;
     [self addTarget:self action:@selector(TextValidation) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(TextValidation) forControlEvents:UIControlEventEditingDidBegin];
-    _validateBlock = ^BOOL(NSString *text) { sleep(2); return NO; };
+    // Default validation block.
+    _validateBlock = ^BOOL(NSString *text) {
+        return YES;
+    };
 }
 
+// Set default font size.
 - (UIFont *)defaultFont
 {
     UIFont *font = nil;
@@ -84,7 +89,7 @@
     else
         font = self.font;
     
-    return [UIFont fontWithName:font.fontName size:roundf(font.pointSize * 0.7f)];
+    return [UIFont fontWithName:font.fontName size:roundf(font.pointSize * fontScale)];
 }
 
 
@@ -202,13 +207,14 @@
     return CGRectIntegral(CGRectMake(rect.origin.x, rect.origin.y + top, rect.size.width, rect.size.height));
 }
 
-/* Testing for validation*/
+// set validation block and mode
 - (void)setTextValidationBlock:(ValidationBlock)block
                         isSync:(BOOL)sync{
     _validateBlock = block;
     self.sync = sync;
 }
 
+// Run validation function and set textfield.leftview and rightview and show validation results.
 - (void) TextValidation {
     if (self.text.length == 0 || self.isFirstResponder){
         [self toggleText:NO];
@@ -224,21 +230,23 @@
     else{
         UIActivityIndicatorView *ActivityView = [[UIActivityIndicatorView alloc]
                                          initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        if (self.leftvalidtion){
+        if (self.leftvalidation){
+            self.leftViewMode = UITextFieldViewModeAlways;
             self.leftView = ActivityView;
         }
         else{
+            self.rightViewMode = UITextFieldViewModeAlways;
             self.rightView = ActivityView;
         }
+
         ActivityView.frame = self.validationFrame;
         [ActivityView startAnimating];
-
         __weak typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             BOOL valid = _validateBlock(weakSelf.text);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [ActivityView stopAnimating];
-                if (self.leftvalidtion){
+                if (self.leftvalidation){
                     [weakSelf.leftView removeFromSuperview];
                     weakSelf.leftView = nil;
                 }
@@ -257,16 +265,8 @@
     }
 }
 
-
--(BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
-    return YES;
-}
-
--(BOOL)textFieldShouldReturn:(UITextField *)textField{
-    [self resignFirstResponder];
-    return YES;
-}
-
+// Function that show the validation block.
+// If show is YES, the validation block is showed. otherwise, it is removed.
 -(void)toggleText:(BOOL)show{
     if(show){
         UIView *view=[[UIView alloc] init];
@@ -275,7 +275,7 @@
         UIImageView * imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"20100722211911-872914855.jpg"]];
         imageView.frame = view.bounds;
         [view addSubview:imageView];
-        if (self.leftvalidtion){
+        if (self.leftvalidation){
             self.leftViewMode = UITextFieldViewModeAlways;
             self.leftView = view;
         }
@@ -284,19 +284,19 @@
             self.rightView = view;
         }
         [UIView animateWithDuration:.3 animations:^{
-            if (self.leftvalidtion)
+            if (self.leftvalidation)
                 self.leftView.alpha = 1.0;
             else
                 self.rightView.alpha = 1.0;
         }];
     }else{
         [UIView animateWithDuration:.3 animations:^{
-            if (self.leftvalidtion)
+            if (self.leftvalidation)
                 self.leftView.alpha = 0.0;
             else
                 self.rightView.alpha = 0.0;
         } completion:^(BOOL finished) {
-            if (self.leftvalidtion){
+            if (self.leftvalidation){
                 [self.leftView removeFromSuperview];
                 self.leftView = nil;
             }

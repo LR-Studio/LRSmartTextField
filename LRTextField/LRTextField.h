@@ -36,11 +36,16 @@ IB_DESIGNABLE
 @property (nonatomic) UIColor *placeholderColor;
 
 
-//proptery for validation event
+/*
+ *proptery for validation event
+ */
 
+// Validation block, default return YES. User needs to set his own validation logic
 typedef BOOL (^ValidationBlock)(NSString *text);
+// Whether the validate feature is turned on
 @property (nonatomic) IBInspectable BOOL validate;
-
+// To set whether the validation block is running in sync mode or async mode
+@property (nonatomic) BOOL sync;
 
 - (void)setTextValidationBlock:(ValidationBlock)block
                         isSync:(BOOL)sync;
