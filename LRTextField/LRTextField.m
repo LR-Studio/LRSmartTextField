@@ -8,18 +8,18 @@
 
 #import "LRTextField.h"
 
+#define fontScale 0.7f
+
 @interface LRTextField ()
-<<<<<<< HEAD
 
 @property (nonatomic, assign) LRTextFieldFormatType type;
 @property (nonatomic, assign) LRTextFieldEffectStyle style;
 @property (nonatomic, assign) LRTextFieldValidationType validationType;
 
-=======
-#define fontScale 0.7f
->>>>>>> a2c524a827b0934fd33c59f04076e9d306ce8e26
-@property (nonatomic) UIFont *placeholderFont;
-@property (nonatomic) CGRect validationFrame;
+@property (nonatomic, assign) CGFloat Ypadding;
+@property (nonatomic, assign) CGFloat Xpadding;
+@property (nonatomic, assign) UIFont *placeholderFont;
+@property (nonatomic, assign) CGRect validationFrame;
 @property (nonatomic, strong) validationBlock validateBlock;
 @end
 
@@ -69,19 +69,18 @@
     return self;
 }
 
-- (void) commonInit{
-    self.delegate = self;
+- (void) commonInit
+{
     self.Xpadding = 0;
     self.Ypadding = 0;
+    self.placeholderColor = [UIColor grayColor];
     self.withAnimation = YES;
     self.placeholderLabel = [UILabel new];
     self.placeholderLabel.alpha = 0.0f;
-    [self addSubview:self.placeholderLabel];
-    self.placeholderColor = [UIColor grayColor];
-    // some basic default fonts/colors
     self.placeholderLabel.textColor = self.placeholderColor;
     self.placeholderLabel.text = self.placeholder;
     self.placeholderLabel.font = [self defaultFont];
+    [self addSubview:self.placeholderLabel];
     
     // Create validation button
     // set for left

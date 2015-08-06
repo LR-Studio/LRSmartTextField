@@ -33,7 +33,7 @@ typedef NS_ENUM(NSInteger, LRTextFieldValidationType)
 };
 
 IB_DESIGNABLE
-@interface LRTextField : UITextField <UITextFieldDelegate>
+@interface LRTextField : UITextField
 
 
 // A label that show placeholder
@@ -54,13 +54,9 @@ IB_DESIGNABLE
 @property (nonatomic,assign) BOOL disallowEditingBetweenCharacters;
 
 //Property for up placeholder events
-@property (nonatomic) CGFloat Ypadding;
-@property (nonatomic) CGFloat Xpadding;
 @property (nonatomic) BOOL withAnimation;
 @property (nonatomic) UIColor *placeholderColor;
 
-<<<<<<< HEAD
-=======
 /*
  *proptery for validation event
  */
@@ -78,10 +74,6 @@ typedef BOOL (^ValidationBlock)(NSString *text);
                         isSync:(BOOL)sync;
 
 
-@property (nonatomic, assign) LRTextFieldFormatType type;
-@property (nonatomic, assign) LRTextFieldEffectStyle style;
-@property (nonatomic, assign) LRTextFieldValidationType validationType;
->>>>>>> a2c524a827b0934fd33c59f04076e9d306ce8e26
 @property (nonatomic, assign) IBInspectable BOOL enableValidation;
 
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type;
