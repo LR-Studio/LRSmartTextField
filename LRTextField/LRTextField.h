@@ -8,6 +8,30 @@
 
 #import <UIKit/UIKit.h>
 
+typedef BOOL (^validationBlock)(NSString *text);
+
+typedef NS_ENUM(NSInteger, LRTextFieldFormatType)
+{
+    LRTextFieldFormatTypeDefault,
+    LRTextFieldFormatTypeEmail,
+    LRTextFieldFormatTypePhone,
+};
+
+typedef NS_ENUM(NSInteger, LRTextFieldEffectStyle)
+{
+    LRTextFieldEffectStyleDefault,
+    LRTextFieldEffectStyleUp,
+    LRTextFieldEffectStyleRight,
+};
+
+typedef NS_ENUM(NSInteger, LRTextFieldValidationType)
+{
+    LRTextFieldValidationTypeDefault,
+    LRTextFieldValidationTypeLeft,
+    LRTextFieldValidationTypeRight,
+    LRTextFieldValidationTypeColor,
+};
+
 IB_DESIGNABLE
 @interface LRTextField : UITextField <UITextFieldDelegate>
 
@@ -36,13 +60,20 @@ IB_DESIGNABLE
 @property (nonatomic) UIColor *placeholderColor;
 
 
+
+@property (nonatomic, assign) LRTextFieldFormatType type;
+@property (nonatomic, assign) LRTextFieldEffectStyle style;
+@property (nonatomic, assign) LRTextFieldValidationType validationType;
+@property (nonatomic, assign) IBInspectable BOOL enableValidation;
+
+- (instancetype) initWithFormatType:(LRTextFieldFormatType)type;
+- (instancetype) initWithEffectStyle:(LRTextFieldEffectStyle)style;
+- (instancetype) initWithValidationType:(LRTextFieldValidationType)validationType;
+- (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style validationType:(LRTextFieldValidationType)validationType;
+
 //proptery for validation event
 
-typedef BOOL (^ValidationBlock)(NSString *text);
-@property (nonatomic) IBInspectable BOOL validate;
-
-
-- (void)setTextValidationBlock:(ValidationBlock)block
+- (void)setTextValidationBlock:(validationBlock)block
                         isSync:(BOOL)sync;
 
 - (BOOL)shouldChangeCharactersInRange:(NSRange)range

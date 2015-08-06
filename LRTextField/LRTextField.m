@@ -13,11 +13,16 @@
 @property (nonatomic) CGRect validationFrame;
 @property (nonatomic) BOOL sync;
 @property (nonatomic) BOOL leftvalidtion;
-//@property (nonatomic) ValidationBlock validateBlock;
+@property (nonatomic, strong) validationBlock validateBlock;
 @end
 
-@implementation LRTextField{
-    ValidationBlock _validateBlock;
+@implementation LRTextField
+
+- (instancetype) init
+{
+    self = [self initWithFrame:CGRectZero];
+    [self commonInit];
+    return self;
 }
 
 - (instancetype)initWithCoder:(NSCoder *)coder
@@ -30,6 +35,28 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
+    [self commonInit];
+    return self;
+}
+
+- (instancetype) initWithFormatType:(LRTextFieldFormatType)type
+{
+    return [self initWithFormatType:type effectStyle:LRTextFieldEffectStyleUp validationType:LRTextFieldValidationTypeDefault];
+}
+
+- (instancetype) initWithEffectStyle:(LRTextFieldEffectStyle)style
+{
+    return [self initWithFormatType:LRTextFieldFormatTypeDefault effectStyle:style validationType:LRTextFieldValidationTypeDefault];
+}
+
+- (instancetype) initWithValidationType:(LRTextFieldValidationType)validationType
+{
+    return [self initWithFormatType:LRTextFieldFormatTypeDefault effectStyle:LRTextFieldEffectStyleDefault validationType:validationType];
+}
+
+- (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style validationType:(LRTextFieldValidationType)validationType
+{
+    self = [super initWithFrame:CGRectZero];
     [self commonInit];
     return self;
 }
@@ -203,9 +230,9 @@
 }
 
 /* Testing for validation*/
-- (void)setTextValidationBlock:(ValidationBlock)block
+- (void)setTextValidationBlock:(validationBlock)block
                         isSync:(BOOL)sync{
-    _validateBlock = block;
+    self.validateBlock = block;
     self.sync = sync;
 }
 
