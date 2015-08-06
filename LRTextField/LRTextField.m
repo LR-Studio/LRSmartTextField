@@ -9,6 +9,11 @@
 #import "LRTextField.h"
 
 @interface LRTextField ()
+
+@property (nonatomic, assign) LRTextFieldFormatType type;
+@property (nonatomic, assign) LRTextFieldEffectStyle style;
+@property (nonatomic, assign) LRTextFieldValidationType validationType;
+
 @property (nonatomic) UIFont *placeholderFont;
 @property (nonatomic) CGRect validationFrame;
 @property (nonatomic) BOOL sync;

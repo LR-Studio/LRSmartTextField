@@ -59,11 +59,6 @@ IB_DESIGNABLE
 @property (nonatomic) BOOL withAnimation;
 @property (nonatomic) UIColor *placeholderColor;
 
-
-
-@property (nonatomic, assign) LRTextFieldFormatType type;
-@property (nonatomic, assign) LRTextFieldEffectStyle style;
-@property (nonatomic, assign) LRTextFieldValidationType validationType;
 @property (nonatomic, assign) IBInspectable BOOL enableValidation;
 
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type;
