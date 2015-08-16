@@ -14,13 +14,14 @@
 
 @property (nonatomic, assign) LRTextFieldFormatType type;
 @property (nonatomic, assign) LRTextFieldEffectStyle style;
-@property (nonatomic, assign) LRTextFieldValidationType validationType;
 
 @property (nonatomic, assign) CGFloat Ypadding;
 @property (nonatomic, assign) CGFloat Xpadding;
 @property (nonatomic, assign) UIFont *placeholderFont;
 @property (nonatomic, assign) CGRect validationFrame;
-@property (nonatomic, strong) validationBlock validateBlock;
+@property (nonatomic, strong) CALayer *textLayer;
+@property (nonatomic, strong) ValidationBlock validationBlock;
+
 @end
 
 @implementation LRTextField
@@ -54,20 +55,15 @@
 // An common init function
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type
 {
-    return [self initWithFormatType:type effectStyle:LRTextFieldEffectStyleUp validationType:LRTextFieldValidationTypeNone];
+    return [self initWithFormatType:type effectStyle:LRTextFieldEffectStyleUp];
 }
 
 - (instancetype) initWithEffectStyle:(LRTextFieldEffectStyle)style
 {
-    return [self initWithFormatType:LRTextFieldFormatTypeNone effectStyle:style validationType:LRTextFieldValidationTypeNone];
+    return [self initWithFormatType:LRTextFieldFormatTypeNone effectStyle:style];
 }
 
-- (instancetype) initWithValidationType:(LRTextFieldValidationType)validationType
-{
-    return [self initWithFormatType:LRTextFieldFormatTypeNone effectStyle:LRTextFieldEffectStyleNone validationType:validationType];
-}
-
-- (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style validationType:(LRTextFieldValidationType)validationType
+- (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style
 {
     self = [super initWithFrame:CGRectZero];
     if ( !self )
@@ -77,54 +73,61 @@
     
     _type = type;
     _style = style;
-    _validationType = validationType;
     [self commonInit];
     
     return self;
 }
 
+- (void) setValidationBlock:(ValidationBlock)block
+{
+    _validationBlock = block;
+}
+
 - (void) placeholderInit
 {
-    self.placeholderLabel = [UILabel new];
+    self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
     self.placeholderLabel.text = self.placeholder;
-    self.placeholderLabel.alpha = 0.0f;
     self.placeholderColor = [UIColor grayColor];
     self.placeholderLabel.textColor = self.placeholderColor;
     self.placeholderLabel.font = [self defaultFont];
-    [self addSubview:self.placeholderLabel];
+}
+
+- (void) hintInit
+{
+    self.hintLabel = [UILabel new];
+    self.hintLabel.text = self.placeholder;
+    self.hintLabel.alpha = 0.0f;
+    self.hintLabel.textColor = [UIColor grayColor];
+    self.hintLabel.font = [self defaultFont];
+}
+
+- (void) updateLayer
+{
+    self.textLayer.frame = CGRectMake(self.bounds.origin.x, self.bounds.origin.y + 10, self.bounds.size.width, self.bounds.size.height - 10);
+    UIColor *borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
+    self.textLayer.borderColor = borderColor.CGColor;
+    self.textLayer.borderWidth = 1.0;
+    self.textLayer.cornerRadius = 5.0;
 }
 
 - (void) commonInit
 {
+    self.borderStyle = UITextBorderStyleNone;
+    self.placeholderLabel = [UILabel new];
+    self.textLayer = [CALayer layer];
     [self placeholderInit];
+    [self hintInit];
+    [self updateLayer];
+    
+    [self addSubview:self.placeholderLabel];
+    [self addSubview:self.hintLabel];
+    [self.layer addSublayer:self.textLayer];
     
     self.Xpadding = 0;
     self.Ypadding = 0;
     [self addTarget:self action:@selector(textFieldEdittingDidEndInternal:) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(textFieldEdittingDidBeginInternal:) forControlEvents:UIControlEventEditingDidBegin];
-    self.validateBlock = ^BOOL(NSString *text) {
-        return YES;
-    };
-    
-//    self.validationLabel = [UIButton buttonWithType:UIButtonTypeCustom];
-    
-    // Set default validation
-//    self.leftvalidation = NO;
-//    
-//    if (self.leftvalidation)
-//        self.validationLabel.frame = CGRectMake(self.layer.borderWidth,
-//                                                0,
-//                                                self.frame.size.height - self.layer.borderWidth,
-//                                                self.frame.size.height - self.layer.borderWidth);
-//    else
-//        self.validationLabel.frame = CGRectMake(self.frame.size.width - self.frame.size.height,
-//                                                0,
-//                                                self.frame.size.height - self.layer.borderWidth,
-//                                                self.frame.size.height - self.layer.borderWidth);
-//    
-//    self.validationFrame = self.validationLabel.frame;
-//    self.sync = YES;
-    
+    self.validationBlock = nil;
 }
 
 - (IBAction) textFieldEdittingDidBeginInternal:(UITextField *)sender
@@ -160,9 +163,8 @@
 
 
 // Format checking
-- (BOOL)shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
-    
-    
+- (BOOL) shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
     NSString * currentText = [self.text stringByReplacingCharactersInRange:range withString:string];
     NSLog(@"%@", currentText);
     if (currentText.length > self.format.length)
@@ -204,6 +206,10 @@
 - (void) runDidEndAnimation
 {
     [self hidePlaceholderLabel];
+    if ( self.validationBlock )
+    {
+        [self validateText];
+    }
 }
 
 - (void) layoutPlaceholderLabel
@@ -294,8 +300,7 @@
     }
     else if ( self.style == LRTextFieldEffectStyleUp )
     {
-        CGFloat top = self.bounds.size.height - rect.size.height;
-        return CGRectIntegral(CGRectMake(rect.origin.x, rect.origin.y + top, rect.size.width, rect.size.height));
+        return [self textRectForBounds:bounds];
     }
     else if ( self.style == LRTextFieldEffectStyleRight )
     {
@@ -305,109 +310,128 @@
     return rect;
 }
 
-// set validation block and mode
-- (void)setTextValidationBlock:(ValidationBlock)block
-                        isSync:(BOOL)sync{
-    self.validateBlock = block;
-    self.sync = sync;
+#pragma mark - Validation
+// Run validation function and set textfield.leftview and rightview and show validation results.
+- (void) validateText
+{
+    [self layoutValidationView];
+    [self runValidationViewAnimation];
+    
+//    UIActivityIndicatorView *ActivityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+//    if (self.leftvalidation)
+//    {
+//        self.leftViewMode = UITextFieldViewModeAlways;
+//        self.leftView = ActivityView;
+//    }
+//    else{
+//        self.rightViewMode = UITextFieldViewModeAlways;
+//        self.rightView = ActivityView;
+//    }
+//    
+//    ActivityView.frame = self.validationFrame;
+//    [ActivityView startAnimating];
+//    __weak typeof(self) weakSelf = self;
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        BOOL valid = weakSelf.validationBlock(weakSelf, weakSelf.text);
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            [ActivityView stopAnimating];
+//            if (self.leftvalidation){
+//                [weakSelf.leftView removeFromSuperview];
+//                weakSelf.leftView = nil;
+//            }
+//            else{
+//                [weakSelf.rightView removeFromSuperview];
+//                weakSelf.rightView = nil;
+//            }
+//            if (valid) {
+//                [self toggleText:NO];
+//            }
+//            else{
+//                [self toggleText:YES];
+//            }
+//        });
+//    });
 }
 
-// Run validation function and set textfield.leftview and rightview and show validation results.
-- (void) TextValidation
+- (void) layoutValidationView
 {
-    if (self.text.length == 0 || self.isFirstResponder){
-        [self toggleText:NO];
-        return;
+    if ( self.style == LRTextFieldEffectStyleNone )
+    {
+        
     }
-
-    if (self.sync){
-        if (!_validateBlock(self.text))
-            [self toggleText:YES];
-        else
-            [self toggleText:NO];
+    else if ( self.style == LRTextFieldEffectStyleUp )
+    {
+        self.validationFrame = CGRectMake(self.frame.size.width - self.frame.size.height,
+                                          0,
+                                          self.frame.size.height - self.layer.borderWidth,
+                                          self.frame.size.height - self.layer.borderWidth);
     }
-    else{
-        UIActivityIndicatorView *ActivityView = [[UIActivityIndicatorView alloc]
-                                         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        if (self.leftvalidation){
-            self.leftViewMode = UITextFieldViewModeAlways;
-            self.leftView = ActivityView;
-        }
-        else{
-            self.rightViewMode = UITextFieldViewModeAlways;
-            self.rightView = ActivityView;
-        }
+    else if ( self.style == LRTextFieldEffectStyleRight )
+    {
+        
+    }
+}
 
-        ActivityView.frame = self.validationFrame;
-        [ActivityView startAnimating];
-        __weak typeof(self) weakSelf = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            BOOL valid = _validateBlock(weakSelf.text);
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [ActivityView stopAnimating];
-                if (self.leftvalidation){
-                    [weakSelf.leftView removeFromSuperview];
-                    weakSelf.leftView = nil;
-                }
-                else{
-                    [weakSelf.rightView removeFromSuperview];
-                    weakSelf.rightView = nil;
-                }
-                if (valid) {
-                    [self toggleText:NO];
-                }
-                else{
-                    [self toggleText:YES];
-                }
-            });
-        });
+- (void) runValidationViewAnimation
+{
+    if ( self.style == LRTextFieldEffectStyleNone )
+    {
+        
+    }
+    else if ( self.style == LRTextFieldEffectStyleUp )
+    {
+        
+    }
+    else if ( self.style == LRTextFieldEffectStyleRight )
+    {
+        
     }
 }
 
 // Function that show the validation block.
 // If show is YES, the validation block is showed. otherwise, it is removed.
-- (void) toggleText:(BOOL)show
-{
-    if ( show )
-    {
-        UIView *view=[[UIView alloc] init];
-        CGRect rect = self.validationFrame;
-        view.frame=rect;
-        UIImageView * imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"20100722211911-872914855.jpg"]];
-        imageView.frame = view.bounds;
-        [view addSubview:imageView];
-        if (self.leftvalidation){
-            self.leftViewMode = UITextFieldViewModeAlways;
-            self.leftView = view;
-        }
-        else{
-            self.rightViewMode = UITextFieldViewModeAlways;
-            self.rightView = view;
-        }
-        [UIView animateWithDuration:.3 animations:^{
-            if (self.leftvalidation)
-                self.leftView.alpha = 1.0;
-            else
-                self.rightView.alpha = 1.0;
-        }];
-    }else{
-        [UIView animateWithDuration:.3 animations:^{
-            if (self.leftvalidation)
-                self.leftView.alpha = 0.0;
-            else
-                self.rightView.alpha = 0.0;
-        } completion:^(BOOL finished) {
-            if (self.leftvalidation){
-                [self.leftView removeFromSuperview];
-                self.leftView = nil;
-            }
-            else{
-                [self.rightView removeFromSuperview];
-                self.rightView = nil;
-            }
-        }];
-    }
-}
+//- (void) toggleText:(BOOL)show
+//{
+//    if ( show )
+//    {
+//        UIView *view=[[UIView alloc] init];
+//        CGRect rect = self.validationFrame;
+//        view.frame=rect;
+//        UIImageView * imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"20100722211911-872914855.jpg"]];
+//        imageView.frame = view.bounds;
+//        [view addSubview:imageView];
+//        if (self.leftvalidation){
+//            self.leftViewMode = UITextFieldViewModeAlways;
+//            self.leftView = view;
+//        }
+//        else{
+//            self.rightViewMode = UITextFieldViewModeAlways;
+//            self.rightView = view;
+//        }
+//        [UIView animateWithDuration:.3 animations:^{
+//            if (self.leftvalidation)
+//                self.leftView.alpha = 1.0;
+//            else
+//                self.rightView.alpha = 1.0;
+//        }];
+//    }else{
+//        [UIView animateWithDuration:.3 animations:^{
+//            if (self.leftvalidation)
+//                self.leftView.alpha = 0.0;
+//            else
+//                self.rightView.alpha = 0.0;
+//        } completion:^(BOOL finished) {
+//            if (self.leftvalidation){
+//                [self.leftView removeFromSuperview];
+//                self.leftView = nil;
+//            }
+//            else{
+//                [self.rightView removeFromSuperview];
+//                self.rightView = nil;
+//            }
+//        }];
+//    }
+//}
 
 
 @end
