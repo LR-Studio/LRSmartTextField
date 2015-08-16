@@ -35,6 +35,11 @@
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
+    if ( !self )
+    {
+        return nil;
+    }
+    _style = LRTextFieldEffectStyleUp;
     [self commonInit];
     return self;
 }
@@ -49,66 +54,87 @@
 // An common init function
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type
 {
-    return [self initWithFormatType:type effectStyle:LRTextFieldEffectStyleUp validationType:LRTextFieldValidationTypeDefault];
+    return [self initWithFormatType:type effectStyle:LRTextFieldEffectStyleUp validationType:LRTextFieldValidationTypeNone];
 }
 
 - (instancetype) initWithEffectStyle:(LRTextFieldEffectStyle)style
 {
-    return [self initWithFormatType:LRTextFieldFormatTypeDefault effectStyle:style validationType:LRTextFieldValidationTypeDefault];
+    return [self initWithFormatType:LRTextFieldFormatTypeNone effectStyle:style validationType:LRTextFieldValidationTypeNone];
 }
 
 - (instancetype) initWithValidationType:(LRTextFieldValidationType)validationType
 {
-    return [self initWithFormatType:LRTextFieldFormatTypeDefault effectStyle:LRTextFieldEffectStyleDefault validationType:validationType];
+    return [self initWithFormatType:LRTextFieldFormatTypeNone effectStyle:LRTextFieldEffectStyleNone validationType:validationType];
 }
 
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style validationType:(LRTextFieldValidationType)validationType
 {
     self = [super initWithFrame:CGRectZero];
+    if ( !self )
+    {
+        return nil;
+    }
+    
+    _type = type;
+    _style = style;
+    _validationType = validationType;
     [self commonInit];
+    
     return self;
+}
+
+- (void) placeholderInit
+{
+    self.placeholderLabel = [UILabel new];
+    self.placeholderLabel.text = self.placeholder;
+    self.placeholderLabel.alpha = 0.0f;
+    self.placeholderColor = [UIColor grayColor];
+    self.placeholderLabel.textColor = self.placeholderColor;
+    self.placeholderLabel.font = [self defaultFont];
+    [self addSubview:self.placeholderLabel];
 }
 
 - (void) commonInit
 {
+    [self placeholderInit];
+    
     self.Xpadding = 0;
     self.Ypadding = 0;
-    self.placeholderColor = [UIColor grayColor];
-    self.withAnimation = YES;
-    self.placeholderLabel = [UILabel new];
-    self.placeholderLabel.alpha = 0.0f;
-    self.placeholderLabel.textColor = self.placeholderColor;
-    self.placeholderLabel.text = self.placeholder;
-    self.placeholderLabel.font = [self defaultFont];
-    [self addSubview:self.placeholderLabel];
-    
-    // Create validation button
-    // set for left
-    
-    self.validationLabel = [UIButton buttonWithType:UIButtonTypeCustom];
-    
-    // Set default validation
-    self.leftvalidation = NO;
-    
-    if (self.leftvalidation)
-        self.validationLabel.frame = CGRectMake(self.layer.borderWidth,
-                                                0,
-                                                self.frame.size.height - self.layer.borderWidth,
-                                                self.frame.size.height - self.layer.borderWidth);
-    else
-        self.validationLabel.frame = CGRectMake(self.frame.size.width - self.frame.size.height,
-                                                0,
-                                                self.frame.size.height - self.layer.borderWidth,
-                                                self.frame.size.height - self.layer.borderWidth);
-    
-    self.validationFrame = self.validationLabel.frame;
-    self.sync = YES;
-    [self addTarget:self action:@selector(TextValidation) forControlEvents:UIControlEventEditingDidEnd];
-    [self addTarget:self action:@selector(TextValidation) forControlEvents:UIControlEventEditingDidBegin];
-    // Default validation block.
-    _validateBlock = ^BOOL(NSString *text) {
+    [self addTarget:self action:@selector(textFieldEdittingDidEndInternal:) forControlEvents:UIControlEventEditingDidEnd];
+    [self addTarget:self action:@selector(textFieldEdittingDidBeginInternal:) forControlEvents:UIControlEventEditingDidBegin];
+    self.validateBlock = ^BOOL(NSString *text) {
         return YES;
     };
+    
+//    self.validationLabel = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+    // Set default validation
+//    self.leftvalidation = NO;
+//    
+//    if (self.leftvalidation)
+//        self.validationLabel.frame = CGRectMake(self.layer.borderWidth,
+//                                                0,
+//                                                self.frame.size.height - self.layer.borderWidth,
+//                                                self.frame.size.height - self.layer.borderWidth);
+//    else
+//        self.validationLabel.frame = CGRectMake(self.frame.size.width - self.frame.size.height,
+//                                                0,
+//                                                self.frame.size.height - self.layer.borderWidth,
+//                                                self.frame.size.height - self.layer.borderWidth);
+//    
+//    self.validationFrame = self.validationLabel.frame;
+//    self.sync = YES;
+    
+}
+
+- (IBAction) textFieldEdittingDidBeginInternal:(UITextField *)sender
+{
+    [self runDidBeginAnimation];
+}
+
+- (IBAction) textFieldEdittingDidEndInternal:(UITextField *)sender
+{
+    [self runDidEndAnimation];
 }
 
 // Set default font size.
@@ -116,12 +142,18 @@
 {
     UIFont *font = nil;
     
-    if (self.attributedPlaceholder && self.attributedPlaceholder.length > 0)
+    if ( self.attributedPlaceholder && self.attributedPlaceholder.length > 0 )
+    {
         font = [self.attributedPlaceholder attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
-    else if (self.attributedText && self.attributedText.length > 0)
+    }
+    else if ( self.attributedText && self.attributedText.length > 0 )
+    {
         font = [self.attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
+    }
     else
+    {
         font = self.font;
+    }
     
     return [UIFont fontWithName:font.fontName size:roundf(font.pointSize * fontScale)];
 }
@@ -161,84 +193,116 @@
     return NO;
 }
 
-// Override this function to add precise subviews.
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    [self setLabelUpAnimation];
-}
-
 // Set up label frame. The default settings is to make the uplabel align with the placeholder
 // Potential alignment need to be paid attention to
-- (void) setLabelUpAnimation{
-    CGRect rect = [self textRectForBounds:self.bounds];
-    CGFloat originX = rect.origin.x;
-    if (self.textAlignment == NSTextAlignmentCenter){
-        originX = originX + (rect.size.width / 2) - (self.placeholderLabel.frame.size.width / 2);
-    }
-    else if ( self.textAlignment == NSTextAlignmentRight){
-        originX = originX + rect.size.width - self.placeholderLabel.frame.size.width;
-    }
-    
-    CGSize uplableSize = [self.placeholderLabel sizeThatFits:self.placeholderLabel.superview.bounds.size];
-    self.placeholderLabel.frame = CGRectMake(self.Xpadding + originX,
-                                             self.Ypadding + self.placeholderLabel.frame.origin.y,
-                                             uplableSize.width,
-                                             uplableSize.height);
-    
-    if (self.isFirstResponder)
-        [self showLabel];
-    else
-        [self hideLabel];
-    
-    
+- (void) runDidBeginAnimation
+{
+    [self layoutPlaceholderLabel];
+    [self showPlaceholderLabel];
 }
 
-// Show label.
-- (void) showLabel{
+- (void) runDidEndAnimation
+{
+    [self hidePlaceholderLabel];
+}
+
+- (void) layoutPlaceholderLabel
+{
+    if ( self.style == LRTextFieldEffectStyleNone )
+    {
+        
+    }
+    else if ( self.style == LRTextFieldEffectStyleUp )
+    {
+        CGRect rect = [self textRectForBounds:self.bounds];
+        CGFloat originX = rect.origin.x;
+        if ( self.textAlignment == NSTextAlignmentCenter )
+        {
+            originX = originX + (rect.size.width / 2) - (self.placeholderLabel.frame.size.width / 2);
+        }
+        else if ( self.textAlignment == NSTextAlignmentRight )
+        {
+            originX = originX + rect.size.width - self.placeholderLabel.frame.size.width;
+        }
+        
+        CGSize uplableSize = [self.placeholderLabel sizeThatFits:self.placeholderLabel.superview.bounds.size];
+        self.placeholderLabel.frame = CGRectMake(self.Xpadding + originX,
+                                                 self.Ypadding + self.placeholderLabel.frame.origin.y,
+                                                 uplableSize.width,
+                                                 uplableSize.height);
+    }
+    else if ( self.style == LRTextFieldEffectStyleRight )
+    {
+        
+    }
+}
+
+- (void) showPlaceholderLabel
+{
     void (^showBlock)() = ^{
         self.placeholderLabel.alpha = 1.0f;
     };
-    if (self.withAnimation){
-        [UIView animateWithDuration:0.3f
-                              delay:0.0f
-                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
-                         animations:showBlock
-                         completion:nil];
-    }
-    else
-        showBlock();
+    [UIView animateWithDuration:0.3f
+                          delay:0.0f
+                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+                     animations:showBlock
+                     completion:nil];
 }
 
-// Hide lable.
-- (void) hideLabel{
+- (void) hidePlaceholderLabel
+{
     void (^hideBlock)() = ^{
         self.placeholderLabel.alpha = 0.0f;
     };
-    if (self.withAnimation){
-        [UIView animateWithDuration:0.3f
-                              delay:0.0f
-                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
-                         animations:hideBlock
-                         completion:nil];
-    }
-    else
-        hideBlock();
+    [UIView animateWithDuration:0.3f
+                          delay:0.0f
+                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+                     animations:hideBlock
+                     completion:nil];
 }
 
 // Override this function to make the editing rect move to the bottom.
-- (CGRect)editingRectForBounds:(CGRect)bounds
+- (CGRect) editingRectForBounds:(CGRect)bounds
 {
     CGRect rect = [super editingRectForBounds:bounds];
-    CGFloat top = self.bounds.size.height - rect.size.height;
-    return CGRectIntegral(CGRectMake(rect.origin.x, rect.origin.y + top, rect.size.width, rect.size.height));
+    
+    if ( self.style == LRTextFieldEffectStyleNone )
+    {
+        
+    }
+    else if ( self.style == LRTextFieldEffectStyleUp )
+    {
+        CGFloat top = self.bounds.size.height - rect.size.height;
+        return CGRectIntegral(CGRectMake(rect.origin.x, rect.origin.y + top, rect.size.width, rect.size.height));
+    }
+    else if ( self.style == LRTextFieldEffectStyleRight )
+    {
+        
+    }
+    
+    return rect;
 }
 
 // Override the function to make the placeholder rect move to the bottom.
-- (CGRect)placeholderRectForBounds:(CGRect)bounds{
+- (CGRect) placeholderRectForBounds:(CGRect)bounds
+{
     CGRect rect = [super editingRectForBounds:bounds];
-    CGFloat top = self.bounds.size.height - rect.size.height;
-    return CGRectIntegral(CGRectMake(rect.origin.x, rect.origin.y + top, rect.size.width, rect.size.height));
+    
+    if ( self.style == LRTextFieldEffectStyleNone )
+    {
+        
+    }
+    else if ( self.style == LRTextFieldEffectStyleUp )
+    {
+        CGFloat top = self.bounds.size.height - rect.size.height;
+        return CGRectIntegral(CGRectMake(rect.origin.x, rect.origin.y + top, rect.size.width, rect.size.height));
+    }
+    else if ( self.style == LRTextFieldEffectStyleRight )
+    {
+        
+    }
+    
+    return rect;
 }
 
 // set validation block and mode
@@ -249,7 +313,8 @@
 }
 
 // Run validation function and set textfield.leftview and rightview and show validation results.
-- (void) TextValidation {
+- (void) TextValidation
+{
     if (self.text.length == 0 || self.isFirstResponder){
         [self toggleText:NO];
         return;
@@ -301,8 +366,10 @@
 
 // Function that show the validation block.
 // If show is YES, the validation block is showed. otherwise, it is removed.
--(void)toggleText:(BOOL)show{
-    if(show){
+- (void) toggleText:(BOOL)show
+{
+    if ( show )
+    {
         UIView *view=[[UIView alloc] init];
         CGRect rect = self.validationFrame;
         view.frame=rect;

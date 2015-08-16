@@ -12,21 +12,21 @@ typedef BOOL (^validationBlock)(NSString *text);
 
 typedef NS_ENUM(NSInteger, LRTextFieldFormatType)
 {
-    LRTextFieldFormatTypeDefault,
+    LRTextFieldFormatTypeNone,
     LRTextFieldFormatTypeEmail,
     LRTextFieldFormatTypePhone,
 };
 
 typedef NS_ENUM(NSInteger, LRTextFieldEffectStyle)
 {
-    LRTextFieldEffectStyleDefault,
+    LRTextFieldEffectStyleNone,
     LRTextFieldEffectStyleUp,
     LRTextFieldEffectStyleRight,
 };
 
 typedef NS_ENUM(NSInteger, LRTextFieldValidationType)
 {
-    LRTextFieldValidationTypeDefault,
+    LRTextFieldValidationTypeNone,
     LRTextFieldValidationTypeLeft,
     LRTextFieldValidationTypeRight,
     LRTextFieldValidationTypeColor,
@@ -38,7 +38,6 @@ IB_DESIGNABLE
 
 // A label that show placeholder
 @property (nonatomic) UILabel * placeholderLabel;
-@property (nonatomic) UIButton * validationLabel;
 
 @property (nonatomic) float *scale;
 
