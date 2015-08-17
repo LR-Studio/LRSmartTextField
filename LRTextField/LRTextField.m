@@ -15,8 +15,8 @@
 @property (nonatomic, assign) LRTextFieldFormatType type;
 @property (nonatomic, assign) LRTextFieldEffectStyle style;
 
-@property (nonatomic, assign) CGFloat Ypadding;
 @property (nonatomic, assign) CGFloat Xpadding;
+@property (nonatomic, assign) CGFloat Ypadding;
 @property (nonatomic, assign) UIFont *placeholderFont;
 @property (nonatomic, assign) CGRect validationFrame;
 @property (nonatomic, strong) CALayer *textLayer;
@@ -90,15 +90,17 @@
     self.placeholderColor = [UIColor grayColor];
     self.placeholderLabel.textColor = self.placeholderColor;
     self.placeholderLabel.font = [self defaultFont];
+    self.placeholderLabel.alpha = 0.0f;
 }
 
 - (void) hintInit
 {
-    self.hintLabel = [UILabel new];
-    self.hintLabel.text = self.placeholder;
-    self.hintLabel.alpha = 0.0f;
+    self.hintLabel.frame = [self placeholderRectForBounds:self.bounds];
+    self.hintLabel.text = @"hint";
     self.hintLabel.textColor = [UIColor grayColor];
     self.hintLabel.font = [self defaultFont];
+    self.hintLabel.textAlignment = NSTextAlignmentRight;
+    self.hintLabel.alpha = 0.0f;
 }
 
 - (void) updateLayer
@@ -114,7 +116,9 @@
 {
     self.borderStyle = UITextBorderStyleNone;
     self.placeholderLabel = [UILabel new];
+    self.hintLabel = [UILabel new];
     self.textLayer = [CALayer layer];
+    
     [self placeholderInit];
     [self hintInit];
     [self updateLayer];
@@ -234,8 +238,9 @@
         CGSize uplableSize = [self.placeholderLabel sizeThatFits:self.placeholderLabel.superview.bounds.size];
         self.placeholderLabel.frame = CGRectMake(self.Xpadding + originX,
                                                  self.Ypadding + self.placeholderLabel.frame.origin.y,
-                                                 uplableSize.width,
+                                                 self.textLayer.frame.size.width,
                                                  uplableSize.height);
+        self.hintLabel.frame = self.placeholderLabel.frame;
     }
     else if ( self.style == LRTextFieldEffectStyleRight )
     {
@@ -247,6 +252,7 @@
 {
     void (^showBlock)() = ^{
         self.placeholderLabel.alpha = 1.0f;
+        self.hintLabel.alpha = 1.0f;
     };
     [UIView animateWithDuration:0.3f
                           delay:0.0f
@@ -259,6 +265,7 @@
 {
     void (^hideBlock)() = ^{
         self.placeholderLabel.alpha = 0.0f;
+        self.hintLabel.alpha = 0.0f;
     };
     [UIView animateWithDuration:0.3f
                           delay:0.0f
