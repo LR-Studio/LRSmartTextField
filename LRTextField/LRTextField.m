@@ -8,18 +8,20 @@
 
 #import "LRTextField.h"
 
-#define fontScale 0.7f
+#define fontScale 0.65f
 
 @interface LRTextField ()
 
 @property (nonatomic, assign) LRTextFieldFormatType type;
 @property (nonatomic, assign) LRTextFieldEffectStyle style;
 
-@property (nonatomic, assign) CGFloat Xpadding;
-@property (nonatomic, assign) CGFloat Ypadding;
+@property (nonatomic, assign) CGFloat placeholderXInset;
+@property (nonatomic, assign) CGFloat placeholderYInset;
 @property (nonatomic, assign) UIFont *placeholderFont;
 @property (nonatomic, assign) CGRect validationFrame;
 @property (nonatomic, strong) CALayer *textLayer;
+@property (nonatomic, assign) CGFloat textXInset;
+@property (nonatomic, assign) CGFloat textYInset;
 @property (nonatomic, strong) ValidationBlock validationBlock;
 
 @end
@@ -85,7 +87,7 @@
 
 - (void) placeholderInit
 {
-    self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
+    self.placeholderLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
     self.placeholderLabel.text = self.placeholder;
     self.placeholderColor = [UIColor grayColor];
     self.placeholderLabel.textColor = self.placeholderColor;
@@ -95,7 +97,7 @@
 
 - (void) hintInit
 {
-    self.hintLabel.frame = [self placeholderRectForBounds:self.bounds];
+    self.hintLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
     self.hintLabel.text = @"hint";
     self.hintLabel.textColor = [UIColor grayColor];
     self.hintLabel.font = [self defaultFont];
@@ -105,7 +107,7 @@
 
 - (void) updateLayer
 {
-    self.textLayer.frame = CGRectMake(self.bounds.origin.x, self.bounds.origin.y + 10, self.bounds.size.width, self.bounds.size.height - 10);
+    self.textLayer.frame = CGRectMake(self.bounds.origin.x, self.bounds.origin.y + [self getPlaceholderHeight], self.bounds.size.width, self.bounds.size.height - [self getPlaceholderHeight]);
     UIColor *borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
     self.textLayer.borderColor = borderColor.CGColor;
     self.textLayer.borderWidth = 1.0;
@@ -114,7 +116,12 @@
 
 - (void) commonInit
 {
-    self.borderStyle = UITextBorderStyleNone;
+    self.placeholderXInset = 0;
+    self.placeholderYInset = 0;
+    self.textXInset = 6;
+    self.textYInset = 0;
+    
+//    self.borderStyle = UITextBorderStyleNone;
     self.placeholderLabel = [UILabel new];
     self.hintLabel = [UILabel new];
     self.textLayer = [CALayer layer];
@@ -127,8 +134,6 @@
     [self addSubview:self.hintLabel];
     [self.layer addSublayer:self.textLayer];
     
-    self.Xpadding = 0;
-    self.Ypadding = 0;
     [self addTarget:self action:@selector(textFieldEdittingDidEndInternal:) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(textFieldEdittingDidBeginInternal:) forControlEvents:UIControlEventEditingDidBegin];
     self.validationBlock = nil;
@@ -224,23 +229,23 @@
     }
     else if ( self.style == LRTextFieldEffectStyleUp )
     {
-        CGRect rect = [self textRectForBounds:self.bounds];
-        CGFloat originX = rect.origin.x;
-        if ( self.textAlignment == NSTextAlignmentCenter )
-        {
-            originX = originX + (rect.size.width / 2) - (self.placeholderLabel.frame.size.width / 2);
-        }
-        else if ( self.textAlignment == NSTextAlignmentRight )
-        {
-            originX = originX + rect.size.width - self.placeholderLabel.frame.size.width;
-        }
-        
-        CGSize uplableSize = [self.placeholderLabel sizeThatFits:self.placeholderLabel.superview.bounds.size];
-        self.placeholderLabel.frame = CGRectMake(self.Xpadding + originX,
-                                                 self.Ypadding + self.placeholderLabel.frame.origin.y,
-                                                 self.textLayer.frame.size.width,
-                                                 uplableSize.height);
-        self.hintLabel.frame = self.placeholderLabel.frame;
+//        CGRect rect = [self textRectForBounds:self.bounds];
+//        CGFloat originX = rect.origin.x;
+//        if ( self.textAlignment == NSTextAlignmentCenter )
+//        {
+//            originX = originX + (rect.size.width / 2) - (self.placeholderLabel.frame.size.width / 2);
+//        }
+//        else if ( self.textAlignment == NSTextAlignmentRight )
+//        {
+//            originX = originX + rect.size.width - self.placeholderLabel.frame.size.width;
+//        }
+//        
+//        CGSize uplableSize = [self.placeholderLabel sizeThatFits:self.placeholderLabel.superview.bounds.size];
+//        self.placeholderLabel.frame = CGRectMake(self.Xpadding + originX,
+//                                                 self.Ypadding + self.placeholderLabel.frame.origin.y,
+//                                                 self.textLayer.frame.size.width,
+//                                                 uplableSize.height);
+//        self.hintLabel.frame = self.placeholderLabel.frame;
     }
     else if ( self.style == LRTextFieldEffectStyleRight )
     {
@@ -285,8 +290,9 @@
     }
     else if ( self.style == LRTextFieldEffectStyleUp )
     {
-        CGFloat top = self.bounds.size.height - rect.size.height;
-        return CGRectIntegral(CGRectMake(rect.origin.x, rect.origin.y + top, rect.size.width, rect.size.height));
+//        CGFloat top = self.bounds.size.height - rect.size.height;
+//        return CGRectIntegral(CGRectMake(rect.origin.x, rect.origin.y + top, rect.size.width, rect.size.height));
+        return [self textRectForBounds:bounds];
     }
     else if ( self.style == LRTextFieldEffectStyleRight )
     {
@@ -315,6 +321,11 @@
     }
     
     return rect;
+}
+
+- (CGRect) textRectForBounds:(CGRect)bounds
+{
+    return CGRectOffset(bounds, self.textXInset, self.textYInset + [self getPlaceholderHeight] / 2);
 }
 
 #pragma mark - Validation
@@ -393,6 +404,11 @@
     {
         
     }
+}
+
+- (CGFloat) getPlaceholderHeight
+{
+    return self.placeholderYInset + [self defaultFont].lineHeight;
 }
 
 // Function that show the validation block.
