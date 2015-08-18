@@ -21,6 +21,14 @@
     //self.test.delegate = self;
     //self.test.onlyNumber = YES;
     
+    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 50)];
+    textField.placeholder = @"123456";
+    textField.borderStyle = UITextBorderStyleNone;
+    [textField setValidationBlock:^BOOL(LRTextField *textField, NSString *text) {
+        return NO;
+    }];
+    [self.view addSubview:textField];
+    
     // Do any additional setup after loading the view, typically from a nib.
 }
 

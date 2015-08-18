@@ -8,7 +8,7 @@
 
 #import "LRTextField.h"
 
-#define fontScale 0.65f
+#define fontScale 0.6f
 
 @interface LRTextField ()
 
@@ -50,6 +50,12 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
+    if ( !self )
+    {
+        return nil;
+    }
+    
+    _style = LRTextFieldEffectStyleUp;
     [self commonInit];
     return self;
 }
@@ -83,6 +89,12 @@
 - (void) setValidationBlock:(ValidationBlock)block
 {
     _validationBlock = block;
+}
+
+- (void) setPlaceholder:(NSString *)placeholder
+{
+    [super setPlaceholder:placeholder];
+    [self placeholderInit];
 }
 
 - (void) placeholderInit
@@ -229,6 +241,8 @@
     }
     else if ( self.style == LRTextFieldEffectStyleUp )
     {
+        [self hintInit];
+        [self updateLayer];
 //        CGRect rect = [self textRectForBounds:self.bounds];
 //        CGFloat originX = rect.origin.x;
 //        if ( self.textAlignment == NSTextAlignmentCenter )
@@ -282,16 +296,12 @@
 // Override this function to make the editing rect move to the bottom.
 - (CGRect) editingRectForBounds:(CGRect)bounds
 {
-    CGRect rect = [super editingRectForBounds:bounds];
-    
     if ( self.style == LRTextFieldEffectStyleNone )
     {
         
     }
     else if ( self.style == LRTextFieldEffectStyleUp )
     {
-//        CGFloat top = self.bounds.size.height - rect.size.height;
-//        return CGRectIntegral(CGRectMake(rect.origin.x, rect.origin.y + top, rect.size.width, rect.size.height));
         return [self textRectForBounds:bounds];
     }
     else if ( self.style == LRTextFieldEffectStyleRight )
@@ -299,14 +309,12 @@
         
     }
     
-    return rect;
+    return CGRectZero;
 }
 
 // Override the function to make the placeholder rect move to the bottom.
 - (CGRect) placeholderRectForBounds:(CGRect)bounds
 {
-    CGRect rect = [super editingRectForBounds:bounds];
-    
     if ( self.style == LRTextFieldEffectStyleNone )
     {
         
@@ -320,7 +328,7 @@
         
     }
     
-    return rect;
+    return CGRectZero;
 }
 
 - (CGRect) textRectForBounds:(CGRect)bounds
@@ -332,43 +340,16 @@
 // Run validation function and set textfield.leftview and rightview and show validation results.
 - (void) validateText
 {
-    [self layoutValidationView];
-    [self runValidationViewAnimation];
-    
-//    UIActivityIndicatorView *ActivityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-//    if (self.leftvalidation)
-//    {
-//        self.leftViewMode = UITextFieldViewModeAlways;
-//        self.leftView = ActivityView;
-//    }
-//    else{
-//        self.rightViewMode = UITextFieldViewModeAlways;
-//        self.rightView = ActivityView;
-//    }
-//    
-//    ActivityView.frame = self.validationFrame;
-//    [ActivityView startAnimating];
-//    __weak typeof(self) weakSelf = self;
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        BOOL valid = weakSelf.validationBlock(weakSelf, weakSelf.text);
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [ActivityView stopAnimating];
-//            if (self.leftvalidation){
-//                [weakSelf.leftView removeFromSuperview];
-//                weakSelf.leftView = nil;
-//            }
-//            else{
-//                [weakSelf.rightView removeFromSuperview];
-//                weakSelf.rightView = nil;
-//            }
-//            if (valid) {
-//                [self toggleText:NO];
-//            }
-//            else{
-//                [self toggleText:YES];
-//            }
-//        });
-//    });
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        BOOL valid = weakSelf.validationBlock(weakSelf, weakSelf.text);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ( !valid )
+            {
+                [self runValidationViewAnimation];
+            }
+        });
+    });
 }
 
 - (void) layoutValidationView
@@ -379,10 +360,10 @@
     }
     else if ( self.style == LRTextFieldEffectStyleUp )
     {
-        self.validationFrame = CGRectMake(self.frame.size.width - self.frame.size.height,
-                                          0,
-                                          self.frame.size.height - self.layer.borderWidth,
-                                          self.frame.size.height - self.layer.borderWidth);
+        self.hintLabel.text = @"error";
+        self.hintLabel.textColor = [UIColor redColor];
+        self.hintLabel.alpha = 1.0f;
+        self.textLayer.borderColor = [UIColor redColor].CGColor;
     }
     else if ( self.style == LRTextFieldEffectStyleRight )
     {
@@ -398,7 +379,9 @@
     }
     else if ( self.style == LRTextFieldEffectStyleUp )
     {
-        
+        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+            [self layoutValidationView];
+        } completion:nil];
     }
     else if ( self.style == LRTextFieldEffectStyleRight )
     {
@@ -410,51 +393,5 @@
 {
     return self.placeholderYInset + [self defaultFont].lineHeight;
 }
-
-// Function that show the validation block.
-// If show is YES, the validation block is showed. otherwise, it is removed.
-//- (void) toggleText:(BOOL)show
-//{
-//    if ( show )
-//    {
-//        UIView *view=[[UIView alloc] init];
-//        CGRect rect = self.validationFrame;
-//        view.frame=rect;
-//        UIImageView * imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"20100722211911-872914855.jpg"]];
-//        imageView.frame = view.bounds;
-//        [view addSubview:imageView];
-//        if (self.leftvalidation){
-//            self.leftViewMode = UITextFieldViewModeAlways;
-//            self.leftView = view;
-//        }
-//        else{
-//            self.rightViewMode = UITextFieldViewModeAlways;
-//            self.rightView = view;
-//        }
-//        [UIView animateWithDuration:.3 animations:^{
-//            if (self.leftvalidation)
-//                self.leftView.alpha = 1.0;
-//            else
-//                self.rightView.alpha = 1.0;
-//        }];
-//    }else{
-//        [UIView animateWithDuration:.3 animations:^{
-//            if (self.leftvalidation)
-//                self.leftView.alpha = 0.0;
-//            else
-//                self.rightView.alpha = 0.0;
-//        } completion:^(BOOL finished) {
-//            if (self.leftvalidation){
-//                [self.leftView removeFromSuperview];
-//                self.leftView = nil;
-//            }
-//            else{
-//                [self.rightView removeFromSuperview];
-//                self.rightView = nil;
-//            }
-//        }];
-//    }
-//}
-
 
 @end
