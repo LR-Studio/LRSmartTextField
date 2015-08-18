@@ -31,6 +31,11 @@
 - (instancetype) init
 {
     self = [self initWithFrame:CGRectZero];
+    if ( !self )
+    {
+        return nil;
+    }
+    
     [self commonInit];
     return self;
 }
@@ -60,7 +65,6 @@
     return self;
 }
 
-// An common init function
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type
 {
     return [self initWithFormatType:type effectStyle:LRTextFieldEffectStyleUp];
@@ -101,8 +105,7 @@
 {
     self.placeholderLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
     self.placeholderLabel.text = self.placeholder;
-    self.placeholderColor = [UIColor grayColor];
-    self.placeholderLabel.textColor = self.placeholderColor;
+    self.placeholderLabel.textColor = self.placeholderTextColor;
     self.placeholderLabel.font = [self defaultFont];
     self.placeholderLabel.alpha = 0.0f;
 }
@@ -110,8 +113,8 @@
 - (void) hintInit
 {
     self.hintLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
-    self.hintLabel.text = @"hint";
-    self.hintLabel.textColor = [UIColor grayColor];
+    self.hintLabel.text = self.hintText;
+    self.hintLabel.textColor = self.hintTextColor;
     self.hintLabel.font = [self defaultFont];
     self.hintLabel.textAlignment = NSTextAlignmentRight;
     self.hintLabel.alpha = 0.0f;
@@ -120,10 +123,9 @@
 - (void) updateLayer
 {
     self.textLayer.frame = CGRectMake(self.bounds.origin.x, self.bounds.origin.y + [self getPlaceholderHeight], self.bounds.size.width, self.bounds.size.height - [self getPlaceholderHeight]);
-    UIColor *borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
-    self.textLayer.borderColor = borderColor.CGColor;
-    self.textLayer.borderWidth = 1.0;
-    self.textLayer.cornerRadius = 5.0;
+    self.textLayer.borderColor = self.borderColor.CGColor;
+    self.textLayer.borderWidth = self.borderWidth;
+    self.textLayer.cornerRadius = self.cornerRadius;
 }
 
 - (void) commonInit
@@ -134,6 +136,23 @@
     self.textYInset = 0;
     
 //    self.borderStyle = UITextBorderStyleNone;
+    self.placeholderText = self.placeholder;
+    self.placeholderTextColor = [UIColor grayColor];
+    self.hintText = @"hint";
+    self.hintTextColor = [UIColor grayColor];
+    self.borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
+    self.borderWidth = 1.0;
+    self.cornerRadius = 5.0;
+    if ( self.bounds.size.height * 0.7 / 2 > 17 )
+    {
+        super.font = [UIFont systemFontOfSize:17.0f];
+    }
+    else
+    {
+        super.font = [UIFont systemFontOfSize:self.bounds.size.height * 0.7 / 2];
+    }
+    
+    
     self.placeholderLabel = [UILabel new];
     self.hintLabel = [UILabel new];
     self.textLayer = [CALayer layer];
@@ -162,7 +181,7 @@
 }
 
 // Set default font size.
-- (UIFont *)defaultFont
+- (UIFont *) defaultFont
 {
     UIFont *font = nil;
     

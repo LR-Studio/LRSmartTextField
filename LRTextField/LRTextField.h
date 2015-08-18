@@ -46,7 +46,13 @@ IB_DESIGNABLE
 @property (nonatomic,strong) NSString * defaultCharMask;
 @property (nonatomic,assign) BOOL disallowEditingBetweenCharacters;
 
-@property (nonatomic) UIColor *placeholderColor;
+@property (nonatomic, strong) NSString *placeholderText;
+@property (nonatomic, strong) UIColor *placeholderTextColor;
+@property (nonatomic, strong) NSString *hintText;
+@property (nonatomic, strong) UIColor *hintTextColor;
+@property (nonatomic, strong) UIColor *borderColor;
+@property (nonatomic, assign) CGFloat borderWidth;
+@property (nonatomic, assign) CGFloat cornerRadius;
 
 
 // Whether the validate feature is turned on
