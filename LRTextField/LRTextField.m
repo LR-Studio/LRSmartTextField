@@ -8,9 +8,12 @@
 
 #import "LRTextField.h"
 
-#define fontScale 0.6f
+#define fontScale 0.7f
 
 @interface LRTextField ()
+
+@property (nonatomic) UILabel *placeholderLabel;
+@property (nonatomic) UILabel *hintLabel;
 
 @property (nonatomic, assign) LRTextFieldFormatType type;
 @property (nonatomic, assign) LRTextFieldEffectStyle style;
@@ -98,19 +101,61 @@
 - (void) setPlaceholder:(NSString *)placeholder
 {
     [super setPlaceholder:placeholder];
-    [self placeholderInit];
+    [self updatePlaceholder];
 }
 
-- (void) placeholderInit
+- (void) setPlaceholderText:(NSString *)placeholderText
+{
+    _placeholderText = placeholderText;
+    [self updatePlaceholder];
+}
+
+- (void) setPlaceholderTextColor:(UIColor *)placeholderTextColor
+{
+    _placeholderTextColor = placeholderTextColor;
+    [self updatePlaceholder];
+}
+
+- (void) setHintText:(NSString *)hintText
+{
+    _hintText = hintText;
+    [self updateHint];
+}
+
+- (void) setHintTextColor:(UIColor *)hintTextColor
+{
+    _hintTextColor = hintTextColor;
+    [self updateHint];
+}
+
+- (void) setBorderColor:(UIColor *)borderColor
+{
+    _borderColor = borderColor;
+    [self updateLayer];
+}
+
+- (void) setBorderWidth:(CGFloat)borderWidth
+{
+    _borderWidth = borderWidth;
+    [self updateLayer];
+}
+
+- (void) setCornerRadius:(CGFloat)cornerRadius
+{
+    _cornerRadius = cornerRadius;
+    [self updateLayer];
+}
+
+- (void) updatePlaceholder
 {
     self.placeholderLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
-    self.placeholderLabel.text = self.placeholder;
+    self.placeholderLabel.text = self.placeholderText;
     self.placeholderLabel.textColor = self.placeholderTextColor;
     self.placeholderLabel.font = [self defaultFont];
     self.placeholderLabel.alpha = 0.0f;
 }
 
-- (void) hintInit
+- (void) updateHint
 {
     self.hintLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
     self.hintLabel.text = self.hintText;
@@ -135,7 +180,6 @@
     self.textXInset = 6;
     self.textYInset = 0;
     
-//    self.borderStyle = UITextBorderStyleNone;
     self.placeholderText = self.placeholder;
     self.placeholderTextColor = [UIColor grayColor];
     self.hintText = @"hint";
@@ -157,8 +201,8 @@
     self.hintLabel = [UILabel new];
     self.textLayer = [CALayer layer];
     
-    [self placeholderInit];
-    [self hintInit];
+    [self updatePlaceholder];
+    [self updateHint];
     [self updateLayer];
     
     [self addSubview:self.placeholderLabel];
@@ -254,31 +298,10 @@
 
 - (void) layoutPlaceholderLabel
 {
-    if ( self.style == LRTextFieldEffectStyleNone )
+    if ( self.style == LRTextFieldEffectStyleUp )
     {
-        
-    }
-    else if ( self.style == LRTextFieldEffectStyleUp )
-    {
-        [self hintInit];
+        [self updateHint];
         [self updateLayer];
-//        CGRect rect = [self textRectForBounds:self.bounds];
-//        CGFloat originX = rect.origin.x;
-//        if ( self.textAlignment == NSTextAlignmentCenter )
-//        {
-//            originX = originX + (rect.size.width / 2) - (self.placeholderLabel.frame.size.width / 2);
-//        }
-//        else if ( self.textAlignment == NSTextAlignmentRight )
-//        {
-//            originX = originX + rect.size.width - self.placeholderLabel.frame.size.width;
-//        }
-//        
-//        CGSize uplableSize = [self.placeholderLabel sizeThatFits:self.placeholderLabel.superview.bounds.size];
-//        self.placeholderLabel.frame = CGRectMake(self.Xpadding + originX,
-//                                                 self.Ypadding + self.placeholderLabel.frame.origin.y,
-//                                                 self.textLayer.frame.size.width,
-//                                                 uplableSize.height);
-//        self.hintLabel.frame = self.placeholderLabel.frame;
     }
     else if ( self.style == LRTextFieldEffectStyleRight )
     {
@@ -315,11 +338,7 @@
 // Override this function to make the editing rect move to the bottom.
 - (CGRect) editingRectForBounds:(CGRect)bounds
 {
-    if ( self.style == LRTextFieldEffectStyleNone )
-    {
-        
-    }
-    else if ( self.style == LRTextFieldEffectStyleUp )
+    if ( self.style == LRTextFieldEffectStyleUp )
     {
         return [self textRectForBounds:bounds];
     }
@@ -334,11 +353,7 @@
 // Override the function to make the placeholder rect move to the bottom.
 - (CGRect) placeholderRectForBounds:(CGRect)bounds
 {
-    if ( self.style == LRTextFieldEffectStyleNone )
-    {
-        
-    }
-    else if ( self.style == LRTextFieldEffectStyleUp )
+    if ( self.style == LRTextFieldEffectStyleUp )
     {
         return [self textRectForBounds:bounds];
     }
@@ -361,28 +376,31 @@
 {
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        BOOL valid = weakSelf.validationBlock(weakSelf, weakSelf.text);
+        NSDictionary *validationInfo = weakSelf.validationBlock(weakSelf, weakSelf.text);
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ( !valid )
-            {
-                [self runValidationViewAnimation];
-            }
+            [self runValidationViewAnimation:validationInfo];
         });
     });
 }
 
-- (void) layoutValidationView
+- (void) layoutValidationView:(NSDictionary *)validationInfo
 {
-    if ( self.style == LRTextFieldEffectStyleNone )
+    if ( self.style == LRTextFieldEffectStyleUp )
     {
-        
-    }
-    else if ( self.style == LRTextFieldEffectStyleUp )
-    {
-        self.hintLabel.text = @"error";
-        self.hintLabel.textColor = [UIColor redColor];
-        self.hintLabel.alpha = 1.0f;
-        self.textLayer.borderColor = [UIColor redColor].CGColor;
+        if ( [validationInfo objectForKey:VALIDATION_SHOW_YES] )
+        {
+            self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_SHOW_YES] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_SHOW_YES] : @"";
+            self.hintLabel.textColor = [UIColor greenColor];
+            self.textLayer.borderColor = [UIColor greenColor].CGColor;
+            self.hintLabel.alpha = 1.0f;
+        }
+        else if ( [validationInfo objectForKey:VALIDATION_SHOW_NO] )
+        {
+            self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_SHOW_NO] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_SHOW_NO] : @"";
+            self.hintLabel.textColor = [UIColor redColor];
+            self.textLayer.borderColor = [UIColor redColor].CGColor;
+            self.hintLabel.alpha = 1.0f;
+        }
     }
     else if ( self.style == LRTextFieldEffectStyleRight )
     {
@@ -390,16 +408,12 @@
     }
 }
 
-- (void) runValidationViewAnimation
+- (void) runValidationViewAnimation:(NSDictionary *)validationInfo
 {
-    if ( self.style == LRTextFieldEffectStyleNone )
-    {
-        
-    }
-    else if ( self.style == LRTextFieldEffectStyleUp )
+    if ( self.style == LRTextFieldEffectStyleUp )
     {
         [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-            [self layoutValidationView];
+            [self layoutValidationView:validationInfo];
         } completion:nil];
     }
     else if ( self.style == LRTextFieldEffectStyleRight )

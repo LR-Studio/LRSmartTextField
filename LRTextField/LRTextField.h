@@ -8,9 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
+#define VALIDATION_SHOW_YES @"YES"
+#define VALIDATION_SHOW_NO  @"NO"
+
 @class LRTextField;
 
-typedef BOOL (^ValidationBlock)(LRTextField *textField, NSString *text);
+typedef NSDictionary *(^ValidationBlock)(LRTextField *textField, NSString *text);
 
 typedef NS_ENUM(NSInteger, LRTextFieldFormatType)
 {
@@ -21,7 +24,6 @@ typedef NS_ENUM(NSInteger, LRTextFieldFormatType)
 
 typedef NS_ENUM(NSInteger, LRTextFieldEffectStyle)
 {
-    LRTextFieldEffectStyleNone,
     LRTextFieldEffectStyleUp,
     LRTextFieldEffectStyleRight,
 };
@@ -29,13 +31,7 @@ typedef NS_ENUM(NSInteger, LRTextFieldEffectStyle)
 IB_DESIGNABLE
 @interface LRTextField : UITextField
 
-// A label that show placeholder
-@property (nonatomic) UILabel *placeholderLabel;
-@property (nonatomic) UILabel *hintLabel;
-
 @property (nonatomic) float *scale;
-
-// Variables for format constrains
 
 // String for format
 @property (nonatomic,strong) IBInspectable NSString * mask;
@@ -54,18 +50,11 @@ IB_DESIGNABLE
 @property (nonatomic, assign) CGFloat borderWidth;
 @property (nonatomic, assign) CGFloat cornerRadius;
 
-
-// Whether the validate feature is turned on
-@property (nonatomic) IBInspectable BOOL validate;
-//proptery for validation event
-- (void) setValidationBlock:(ValidationBlock)block;
-
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type;
 - (instancetype) initWithEffectStyle:(LRTextFieldEffectStyle)style;
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style;
 
-
-
+- (void) setValidationBlock:(ValidationBlock)block;
 - (BOOL)shouldChangeCharactersInRange:(NSRange)range
                     replacementString:(NSString *)string;
 

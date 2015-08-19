@@ -24,8 +24,8 @@
     LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 30)];
     textField.placeholder = @"123456";
     textField.borderStyle = UITextBorderStyleNone;
-    [textField setValidationBlock:^BOOL(LRTextField *textField, NSString *text) {
-        return NO;
+    [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
+        return @{ };
     }];
     [self.view addSubview:textField];
     
