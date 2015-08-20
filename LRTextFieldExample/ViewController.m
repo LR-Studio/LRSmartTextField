@@ -17,7 +17,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     //self.test.format = @"(###)###-####";
-    self.test.format = @"#######";
+    //self.test.format = @"#######";
     //self.test.delegate = self;
     //self.test.onlyNumber = YES;
     

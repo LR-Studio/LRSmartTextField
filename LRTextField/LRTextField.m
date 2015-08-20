@@ -15,7 +15,6 @@
 @property (nonatomic) UILabel *placeholderLabel;
 @property (nonatomic) UILabel *hintLabel;
 
-@property (nonatomic, assign) LRTextFieldFormatType type;
 @property (nonatomic, assign) LRTextFieldEffectStyle style;
 
 @property (nonatomic, assign) CGFloat placeholderXInset;
@@ -26,6 +25,7 @@
 @property (nonatomic, assign) CGFloat textYInset;
 @property (nonatomic, strong) ValidationBlock validationBlock;
 @property (nonatomic, strong) NSString *temporaryString;
+
 @end
 
 @implementation LRTextField
@@ -42,7 +42,7 @@
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (instancetype) initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if ( !self )
@@ -54,7 +54,7 @@
     return self;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype) initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if ( !self )
@@ -97,9 +97,42 @@
     _validationBlock = block;
 }
 
+- (void) setType:(LRTextFieldFormatType)type
+{
+    _type = type;
+    switch ( _type )
+    {
+        case LRTextFieldFormatTypeNone:
+            self.format = @"";
+            break;
+        case LRTextFieldFormatTypeEmail:
+            self.validationBlock = nil;
+            self.keyboardType = UIKeyboardTypeEmailAddress;
+            break;
+        case LRTextFieldFormatTypePhone:
+            self.format = @"###-###-####";
+            self.keyboardType = UIKeyboardTypeNamePhonePad;
+            break;
+        case LRTextFieldFormatTypeDate:
+            self.format = @"##/##/####";
+            self.keyboardType = UIKeyboardTypeNumberPad;
+            break;
+        case LRTextFieldFormatTypeHour:
+            self.format = @"##:##:##";
+            self.keyboardType = UIKeyboardTypeNumberPad;
+            break;
+        default:
+            break;
+    }
+}
+
 - (void) setPlaceholder:(NSString *)placeholder
 {
     [super setPlaceholder:placeholder];
+    if ( !_placeholderText )
+    {
+        _placeholderText = placeholder;
+    }
     [self updatePlaceholder];
 }
 
@@ -174,19 +207,18 @@
 
 - (void) commonInit
 {
-    self.placeholderXInset = 0;
-    self.placeholderYInset = 0;
-    self.textXInset = 6;
-    self.textYInset = 0;
+    _placeholderXInset = 0;
+    _placeholderYInset = 0;
+    _textXInset = 6;
+    _textYInset = 0;
     
-    self.placeholderText = self.placeholder;
-    self.placeholderTextColor = [UIColor grayColor];
-    self.hintText = @"hint";
-    self.hintTextColor = [UIColor grayColor];
-    self.borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
-    self.borderWidth = 1.0;
-    self.cornerRadius = 5.0;
-    self.temporaryString = [[NSString alloc] init];
+    _placeholderTextColor = [UIColor grayColor];
+    _hintText = @"hint";
+    _hintTextColor = [UIColor grayColor];
+    _borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
+    _borderWidth = 1.0;
+    _cornerRadius = 5.0;
+    _temporaryString = [[NSString alloc] init];
     if ( self.bounds.size.height * 0.7 / 2 > 17 )
     {
         super.font = [UIFont systemFontOfSize:17.0f];
@@ -251,7 +283,6 @@
     return [UIFont fontWithName:font.fontName size:roundf(font.pointSize * fontScale)];
 }
 
-//
 - (void) sanitizeStrings
 {
     NSString * currentText = self.text;
@@ -303,7 +334,6 @@
 - (void) runDidChange
 {
     [self sanitizeStrings];
-    NSLog(self.text);
     self.temporaryString = self.text;
 }
 

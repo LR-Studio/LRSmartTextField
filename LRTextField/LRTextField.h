@@ -20,6 +20,8 @@ typedef NS_ENUM(NSInteger, LRTextFieldFormatType)
     LRTextFieldFormatTypeNone,
     LRTextFieldFormatTypeEmail,
     LRTextFieldFormatTypePhone,
+    LRTextFieldFormatTypeDate,
+    LRTextFieldFormatTypeHour,
 };
 
 typedef NS_ENUM(NSInteger, LRTextFieldEffectStyle)
@@ -42,6 +44,8 @@ IB_DESIGNABLE
 @property (nonatomic,strong) NSString * defaultCharMask;
 @property (nonatomic,assign) BOOL disallowEditingBetweenCharacters;
 
+
+@property (nonatomic, assign) LRTextFieldFormatType type;
 @property (nonatomic, strong) NSString *placeholderText;
 @property (nonatomic, strong) UIColor *placeholderTextColor;
 @property (nonatomic, strong) NSString *hintText;
@@ -55,7 +59,5 @@ IB_DESIGNABLE
 - (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style;
 
 - (void) setValidationBlock:(ValidationBlock)block;
-- (BOOL)shouldChangeCharactersInRange:(NSRange)range
-                    replacementString:(NSString *)string;
 
 @end
