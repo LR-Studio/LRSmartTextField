@@ -21,7 +21,6 @@
 @property (nonatomic, assign) CGFloat placeholderXInset;
 @property (nonatomic, assign) CGFloat placeholderYInset;
 @property (nonatomic, assign) UIFont *placeholderFont;
-@property (nonatomic, assign) CGRect validationFrame;
 @property (nonatomic, strong) CALayer *textLayer;
 @property (nonatomic, assign) CGFloat textXInset;
 @property (nonatomic, assign) CGFloat textYInset;
