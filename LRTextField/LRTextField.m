@@ -26,7 +26,7 @@
 @property (nonatomic, assign) CGFloat textXInset;
 @property (nonatomic, assign) CGFloat textYInset;
 @property (nonatomic, strong) ValidationBlock validationBlock;
-
+@property (nonatomic, strong) NSString *temporaryString;
 @end
 
 @implementation LRTextField
@@ -187,6 +187,7 @@
     self.borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
     self.borderWidth = 1.0;
     self.cornerRadius = 5.0;
+    self.temporaryString = [[NSString alloc] init];
     if ( self.bounds.size.height * 0.7 / 2 > 17 )
     {
         super.font = [UIFont systemFontOfSize:17.0f];
@@ -211,6 +212,7 @@
     
     [self addTarget:self action:@selector(textFieldEdittingDidEndInternal:) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(textFieldEdittingDidBeginInternal:) forControlEvents:UIControlEventEditingDidBegin];
+    [self addTarget:self action:@selector(textFieldEdittingDidChangeInternal:) forControlEvents:UIControlEventEditingChanged];
     self.validationBlock = nil;
 }
 
@@ -222,6 +224,11 @@
 - (IBAction) textFieldEdittingDidEndInternal:(UITextField *)sender
 {
     [self runDidEndAnimation];
+}
+
+- (IBAction) textFieldEdittingDidChangeInternal:(UITextField *)sender
+{
+    [self runDidChange];
 }
 
 // Set default font size.
@@ -245,14 +252,13 @@
     return [UIFont fontWithName:font.fontName size:roundf(font.pointSize * fontScale)];
 }
 
-
-// Format checking
-- (BOOL) shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+//
+- (void) sanitizeStrings
 {
-    NSString * currentText = [self.text stringByReplacingCharactersInRange:range withString:string];
-    NSLog(@"%@", currentText);
+    NSString * currentText = self.text;
     if (currentText.length > self.format.length)
-        return NO;
+        self.text = self.temporaryString;
+    
     NSMutableString * result = [[NSMutableString alloc] init];
     int last = 0;
     for (int i = 0; i < self.format.length; i++){
@@ -276,7 +282,6 @@
     }
     
     self.text = result;
-    return NO;
 }
 
 // Set up label frame. The default settings is to make the uplabel align with the placeholder
@@ -294,6 +299,13 @@
     {
         [self validateText];
     }
+}
+
+- (void) runDidChange
+{
+    [self sanitizeStrings];
+    NSLog(self.text);
+    self.temporaryString = self.text;
 }
 
 - (void) layoutPlaceholderLabel
