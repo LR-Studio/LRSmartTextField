@@ -23,6 +23,7 @@
     
     LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 30)];
     textField.placeholder = @"123456";
+    textField.format = @"(###)-##";
     textField.borderStyle = UITextBorderStyleNone;
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
         return @{ };
@@ -37,9 +38,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string{
-    return  [_test shouldChangeCharactersInRange:range replacementString:string];
-}
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
