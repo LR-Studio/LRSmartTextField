@@ -15,48 +15,24 @@
 
 typedef NSDictionary *(^ValidationBlock)(LRTextField *textField, NSString *text);
 
-typedef NS_ENUM(NSInteger, LRTextFieldFormatType)
-{
-    LRTextFieldFormatTypeNone,
-    LRTextFieldFormatTypeEmail,
-    LRTextFieldFormatTypePhone,
-    LRTextFieldFormatTypeDate,
-    LRTextFieldFormatTypeHour,
-};
-
-typedef NS_ENUM(NSInteger, LRTextFieldEffectStyle)
-{
-    LRTextFieldEffectStyleUp,
-    LRTextFieldEffectStyleRight,
-};
-
 IB_DESIGNABLE
 @interface LRTextField : UITextField
 
 @property (nonatomic) float *scale;
 
-// String for format
-@property (nonatomic,strong) IBInspectable NSString * mask;
-@property (nonatomic) IBInspectable BOOL onlyNumber;
-// String for raw content
-@property (nonatomic,strong) IBInspectable NSString * format;
 @property (nonatomic,strong) NSString * raw;
 @property (nonatomic,strong) NSString * defaultCharMask;
 @property (nonatomic,assign) BOOL disallowEditingBetweenCharacters;
 
-
-@property (nonatomic, assign) LRTextFieldFormatType type;
-@property (nonatomic, strong) NSString *placeholderText;
-@property (nonatomic, strong) UIColor *placeholderTextColor;
-@property (nonatomic, strong) NSString *hintText;
-@property (nonatomic, strong) UIColor *hintTextColor;
-@property (nonatomic, strong) UIColor *borderColor;
-@property (nonatomic, assign) CGFloat borderWidth;
-@property (nonatomic, assign) CGFloat cornerRadius;
-
-- (instancetype) initWithFormatType:(LRTextFieldFormatType)type;
-- (instancetype) initWithEffectStyle:(LRTextFieldEffectStyle)style;
-- (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style;
+@property (nonatomic, strong) IBInspectable NSString * format;
+@property (nonatomic, assign) IBInspectable BOOL enableAnimation;
+@property (nonatomic, strong) IBInspectable NSString *placeholderText;
+@property (nonatomic, strong) IBInspectable UIColor *placeholderTextColor;
+@property (nonatomic, strong) IBInspectable NSString *hintText;
+@property (nonatomic, strong) IBInspectable UIColor *hintTextColor;
+@property (nonatomic, strong) IBInspectable UIColor *borderColor;
+@property (nonatomic, assign) IBInspectable CGFloat borderWidth;
+@property (nonatomic, assign) IBInspectable CGFloat cornerRadius;
 
 - (void) setValidationBlock:(ValidationBlock)block;
 

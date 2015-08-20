@@ -15,8 +15,6 @@
 @property (nonatomic) UILabel *placeholderLabel;
 @property (nonatomic) UILabel *hintLabel;
 
-@property (nonatomic, assign) LRTextFieldEffectStyle style;
-
 @property (nonatomic, assign) CGFloat placeholderXInset;
 @property (nonatomic, assign) CGFloat placeholderYInset;
 @property (nonatomic, assign) UIFont *placeholderFont;
@@ -49,7 +47,7 @@
     {
         return nil;
     }
-    _style = LRTextFieldEffectStyleUp;
+    
     [self commonInit];
     return self;
 }
@@ -62,67 +60,25 @@
         return nil;
     }
     
-    _style = LRTextFieldEffectStyleUp;
     [self commonInit];
     return self;
 }
 
-- (instancetype) initWithFormatType:(LRTextFieldFormatType)type
+- (void) setFormat:(NSString *)format
 {
-    return [self initWithFormatType:type effectStyle:LRTextFieldEffectStyleUp];
+    _format = format;
 }
 
-- (instancetype) initWithEffectStyle:(LRTextFieldEffectStyle)style
+- (void) setEnableAnimation:(BOOL)enableAnimation
 {
-    return [self initWithFormatType:LRTextFieldFormatTypeNone effectStyle:style];
-}
-
-- (instancetype) initWithFormatType:(LRTextFieldFormatType)type effectStyle:(LRTextFieldEffectStyle)style
-{
-    self = [super initWithFrame:CGRectZero];
-    if ( !self )
+    _enableAnimation = enableAnimation;
+    if ( _enableAnimation )
     {
-        return nil;
+        self.placeholderLabel.hidden = NO;
     }
-    
-    _type = type;
-    _style = style;
-    [self commonInit];
-    
-    return self;
-}
-
-- (void) setValidationBlock:(ValidationBlock)block
-{
-    _validationBlock = block;
-}
-
-- (void) setType:(LRTextFieldFormatType)type
-{
-    _type = type;
-    switch ( _type )
+    else
     {
-        case LRTextFieldFormatTypeNone:
-            self.format = @"";
-            break;
-        case LRTextFieldFormatTypeEmail:
-            self.validationBlock = nil;
-            self.keyboardType = UIKeyboardTypeEmailAddress;
-            break;
-        case LRTextFieldFormatTypePhone:
-            self.format = @"###-###-####";
-            self.keyboardType = UIKeyboardTypeNamePhonePad;
-            break;
-        case LRTextFieldFormatTypeDate:
-            self.format = @"##/##/####";
-            self.keyboardType = UIKeyboardTypeNumberPad;
-            break;
-        case LRTextFieldFormatTypeHour:
-            self.format = @"##:##:##";
-            self.keyboardType = UIKeyboardTypeNumberPad;
-            break;
-        default:
-            break;
+        self.placeholderLabel.hidden = YES;
     }
 }
 
@@ -178,6 +134,11 @@
     [self updateLayer];
 }
 
+- (void) setValidationBlock:(ValidationBlock)block
+{
+    _validationBlock = block;
+}
+
 - (void) updatePlaceholder
 {
     self.placeholderLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
@@ -212,6 +173,7 @@
     _textXInset = 6;
     _textYInset = 0;
     
+    _enableAnimation = YES;
     _placeholderTextColor = [UIColor grayColor];
     _hintText = @"hint";
     _hintTextColor = [UIColor grayColor];
@@ -297,7 +259,8 @@
         unichar charAtMask = [_format characterAtIndex:i];
         unichar charAtCurrent = [currentText characterAtIndex:last];
         if (charAtMask == '#'){
-            if (self.onlyNumber && !isnumber(charAtCurrent)){
+            if ( !isnumber(charAtCurrent) )
+            {
                 last++;
                 continue;
             }
@@ -314,8 +277,6 @@
     self.text = result;
 }
 
-// Set up label frame. The default settings is to make the uplabel align with the placeholder
-// Potential alignment need to be paid attention to
 - (void) runDidBeginAnimation
 {
     [self layoutPlaceholderLabel];
@@ -339,22 +300,18 @@
 
 - (void) layoutPlaceholderLabel
 {
-    if ( self.style == LRTextFieldEffectStyleUp )
-    {
-        [self updateHint];
-        [self updateLayer];
-    }
-    else if ( self.style == LRTextFieldEffectStyleRight )
-    {
-        
-    }
+    [self updateHint];
+    [self updateLayer];
 }
 
 - (void) showPlaceholderLabel
 {
     void (^showBlock)() = ^{
         self.placeholderLabel.alpha = 1.0f;
-        self.hintLabel.alpha = 1.0f;
+        if ( _enableAnimation )
+        {
+            self.hintLabel.alpha = 1.0f;
+        }
     };
     [UIView animateWithDuration:0.3f
                           delay:0.0f
@@ -379,31 +336,13 @@
 // Override this function to make the editing rect move to the bottom.
 - (CGRect) editingRectForBounds:(CGRect)bounds
 {
-    if ( self.style == LRTextFieldEffectStyleUp )
-    {
-        return [self textRectForBounds:bounds];
-    }
-    else if ( self.style == LRTextFieldEffectStyleRight )
-    {
-        
-    }
-    
-    return CGRectZero;
+    return [self textRectForBounds:bounds];
 }
 
 // Override the function to make the placeholder rect move to the bottom.
 - (CGRect) placeholderRectForBounds:(CGRect)bounds
 {
-    if ( self.style == LRTextFieldEffectStyleUp )
-    {
-        return [self textRectForBounds:bounds];
-    }
-    else if ( self.style == LRTextFieldEffectStyleRight )
-    {
-        
-    }
-    
-    return CGRectZero;
+    return [self textRectForBounds:bounds];
 }
 
 - (CGRect) textRectForBounds:(CGRect)bounds
@@ -426,41 +365,27 @@
 
 - (void) layoutValidationView:(NSDictionary *)validationInfo
 {
-    if ( self.style == LRTextFieldEffectStyleUp )
+    if ( [validationInfo objectForKey:VALIDATION_SHOW_YES] )
     {
-        if ( [validationInfo objectForKey:VALIDATION_SHOW_YES] )
-        {
-            self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_SHOW_YES] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_SHOW_YES] : @"";
-            self.hintLabel.textColor = [UIColor greenColor];
-            self.textLayer.borderColor = [UIColor greenColor].CGColor;
-            self.hintLabel.alpha = 1.0f;
-        }
-        else if ( [validationInfo objectForKey:VALIDATION_SHOW_NO] )
-        {
-            self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_SHOW_NO] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_SHOW_NO] : @"";
-            self.hintLabel.textColor = [UIColor redColor];
-            self.textLayer.borderColor = [UIColor redColor].CGColor;
-            self.hintLabel.alpha = 1.0f;
-        }
+        self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_SHOW_YES] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_SHOW_YES] : @"";
+        self.hintLabel.textColor = [UIColor greenColor];
+        self.textLayer.borderColor = [UIColor greenColor].CGColor;
+        self.hintLabel.alpha = 1.0f;
     }
-    else if ( self.style == LRTextFieldEffectStyleRight )
+    else if ( [validationInfo objectForKey:VALIDATION_SHOW_NO] )
     {
-        
+        self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_SHOW_NO] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_SHOW_NO] : @"";
+        self.hintLabel.textColor = [UIColor redColor];
+        self.textLayer.borderColor = [UIColor redColor].CGColor;
+        self.hintLabel.alpha = 1.0f;
     }
 }
 
 - (void) runValidationViewAnimation:(NSDictionary *)validationInfo
 {
-    if ( self.style == LRTextFieldEffectStyleUp )
-    {
-        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-            [self layoutValidationView:validationInfo];
-        } completion:nil];
-    }
-    else if ( self.style == LRTextFieldEffectStyleRight )
-    {
-        
-    }
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+        [self layoutValidationView:validationInfo];
+    } completion:nil];
 }
 
 - (CGFloat) getPlaceholderHeight

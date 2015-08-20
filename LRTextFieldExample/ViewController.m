@@ -24,9 +24,10 @@
     LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 30)];
     textField.placeholder = @"123456";
     textField.format = @"(###)-##";
+    textField.enableAnimation = NO;
     textField.borderStyle = UITextBorderStyleNone;
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
-        return @{ };
+        return @{ VALIDATION_SHOW_YES : @"good" };
     }];
     [self.view addSubview:textField];
     
@@ -39,15 +40,15 @@
 }
 
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    return [textField resignFirstResponder];
-}
-
-
-- (void)textFieldDidEndEditing:(UITextField *)textField{
-  
-}
+//- (BOOL)textFieldShouldReturn:(UITextField *)textField
+//{
+//    return [textField resignFirstResponder];
+//}
+//
+//
+//- (void)textFieldDidEndEditing:(UITextField *)textField{
+//  
+//}
 
 
 @end
