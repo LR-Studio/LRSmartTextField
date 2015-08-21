@@ -29,6 +29,8 @@
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
         return @{ VALIDATION_SHOW_YES : @"good" };
     }];
+    textField.delegate = self;
+    textField.text = @"abcdefg";
     [self.view addSubview:textField];
     
     // Do any additional setup after loading the view, typically from a nib.
@@ -46,9 +48,11 @@
 //}
 //
 //
-//- (void)textFieldDidEndEditing:(UITextField *)textField{
-//  
-//}
+- (void)textFieldDidEndEditing:(LRTextField *)textField
+{
+    NSLog(@"%@", textField.rawString);
+  
+}
 
 
 @end

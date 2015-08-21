@@ -2,8 +2,8 @@
 //  LRTextField.m
 //  LRTextField
 //
-//  Created by Chao on 7/26/15.
-//  Copyright (c) 2015 Chao. All rights reserved.
+//  Created by LR Studio on 7/26/15.
+//  Copyright (c) 2015 LR Studio. All rights reserved.
 //
 
 #import "LRTextField.h"
@@ -62,6 +62,36 @@
     
     [self commonInit];
     return self;
+}
+
+- (NSString *) rawString
+{
+    if ( !_format )
+    {
+        return self.text;
+    }
+    
+    NSMutableString *mutableStr = [NSMutableString stringWithString:self.text];
+    for ( NSInteger i = self.text.length - 1; i >= 0; i-- )
+    {
+        if ( [self.format characterAtIndex:i] != '#' )
+        {
+            [mutableStr deleteCharactersInRange:NSMakeRange(i, 1)];
+        }
+    }
+    
+    return mutableStr;
+}
+
+- (void) setText:(NSString *)text
+{
+    if ( !_format )
+    {
+        [super setText:text];
+        return;
+    }
+    
+    [self renderString:text];
 }
 
 - (void) setFormat:(NSString *)format
@@ -224,7 +254,6 @@
     [self runDidChange];
 }
 
-// Set default font size.
 - (UIFont *) defaultFont
 {
     UIFont *font = nil;
@@ -248,25 +277,31 @@
 - (void) sanitizeStrings
 {
     NSString * currentText = self.text;
-    if (currentText.length > self.format.length)
+    if ( currentText.length > self.format.length )
+    {
         self.text = self.temporaryString;
+        return;
+    }
     
+    [self renderString:currentText];
+}
+
+- (void) renderString:(NSString *)raw
+{
     NSMutableString * result = [[NSMutableString alloc] init];
     int last = 0;
-    for (int i = 0; i < self.format.length; i++){
-        if (last >= currentText.length)
+    for ( int i = 0; i < self.format.length; i++ )
+    {
+        if ( last >= raw.length )
             break;
-        unichar charAtMask = [_format characterAtIndex:i];
-        unichar charAtCurrent = [currentText characterAtIndex:last];
-        if (charAtMask == '#'){
-            if ( !isnumber(charAtCurrent) )
-            {
-                last++;
-                continue;
-            }
+        unichar charAtMask = [self.format characterAtIndex:i];
+        unichar charAtCurrent = [raw characterAtIndex:last];
+        if ( charAtMask == '#' )
+        {
             [result appendString:[NSString stringWithFormat:@"%c",charAtCurrent]];
         }
-        else{
+        else
+        {
             [result appendString:[NSString stringWithFormat:@"%c",charAtMask]];
             if (charAtCurrent != charAtMask)
                 last--;
@@ -274,7 +309,8 @@
         last++;
     }
     
-    self.text = result;
+    [super setText:result];
+    self.temporaryString = self.text;
 }
 
 - (void) runDidBeginAnimation
@@ -294,8 +330,12 @@
 
 - (void) runDidChange
 {
+    if ( !_format )
+    {
+        return;
+    }
+    
     [self sanitizeStrings];
-    self.temporaryString = self.text;
 }
 
 - (void) layoutPlaceholderLabel

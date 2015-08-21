@@ -2,8 +2,8 @@
 //  LRTextField.h
 //  LRTextField
 //
-//  Created by Chao on 7/26/15.
-//  Copyright (c) 2015 Chao. All rights reserved.
+//  Created by LR Studio on 7/26/15.
+//  Copyright (c) 2015 LR Studio. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -18,13 +18,8 @@ typedef NSDictionary *(^ValidationBlock)(LRTextField *textField, NSString *text)
 IB_DESIGNABLE
 @interface LRTextField : UITextField
 
-@property (nonatomic) float *scale;
-
-@property (nonatomic,strong) NSString * raw;
-@property (nonatomic,strong) NSString * defaultCharMask;
-@property (nonatomic,assign) BOOL disallowEditingBetweenCharacters;
-
-@property (nonatomic, strong) IBInspectable NSString * format;
+@property (nonatomic, strong) IBInspectable NSString *format;
+@property (nonatomic, strong, readonly) IBInspectable NSString *rawString;
 @property (nonatomic, assign) IBInspectable BOOL enableAnimation;
 @property (nonatomic, strong) IBInspectable NSString *placeholderText;
 @property (nonatomic, strong) IBInspectable UIColor *placeholderTextColor;
