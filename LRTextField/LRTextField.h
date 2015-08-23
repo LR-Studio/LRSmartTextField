@@ -8,8 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-#define VALIDATION_SHOW_YES @"YES"
-#define VALIDATION_SHOW_NO  @"NO"
+#define VALIDATION_INDICATOR_YES @"YES"
+#define VALIDATION_INDICATOR_NO  @"NO"
 
 @class LRTextField;
 
@@ -18,21 +18,77 @@ typedef NSDictionary *(^ValidationBlock)(LRTextField *textField, NSString *text)
 IB_DESIGNABLE
 @interface LRTextField : UITextField
 
+/**
+ * Text to be displayed in the text field and masked if format is set.
+ * Default is nil.
+ */
 @property (nonatomic, copy) IBInspectable NSString *text;
-@property (nonatomic, strong) IBInspectable NSString *format;
-@property (nonatomic, copy, readonly) NSString *rawString;
 
-@property (nonatomic, assign) IBInspectable BOOL enableAnimation;
-@property (nonatomic, strong) IBInspectable NSString *placeholderText;
+/**
+ * Mask of input text.
+ * Default is nil.
+ */
+@property (nonatomic, copy) IBInspectable NSString *format;
+
+/**
+ * Text without mask.
+ * Default is nil.
+ */
+@property (nonatomic, copy, readonly) NSString *rawText;
+
+/**
+ * Indicate whether the floating label animation is enabled.
+ * Default is YES.
+ */
+@property (nonatomic) IBInspectable BOOL enableAnimation;
+
+/**
+ * Text to be displayed in the floating placeholder label.
+ * Default is the same as placeholder.
+ */
+@property (nonatomic, copy) IBInspectable NSString *placeholderText;
+
+/**
+ * Text color to be applied to floating placeholder text.
+ * Default is [UIColor grayColor].
+ */
 @property (nonatomic, strong) IBInspectable UIColor *placeholderTextColor;
 
-@property (nonatomic, strong) IBInspectable NSString *hintText;
+/**
+ * Text to be displayed in the floating hint label.
+ * Default is nil.
+ */
+@property (nonatomic, copy) IBInspectable NSString *hintText;
+
+/**
+ * Text color to be applied to the floating hint text.
+ * Default is [UIColor grayColor].
+ */
 @property (nonatomic, strong) IBInspectable UIColor *hintTextColor;
 
+/**
+ * Border color to be applied to the border of editting area.
+ * Default is [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0].
+ */
 @property (nonatomic, strong) IBInspectable UIColor *borderColor;
-@property (nonatomic, assign) IBInspectable CGFloat borderWidth;
-@property (nonatomic, assign) IBInspectable CGFloat cornerRadius;
 
+/**
+ * Border width to be applied to the border of editting area.
+ * Default is 1.0.
+ */
+@property (nonatomic) IBInspectable CGFloat borderWidth;
+
+/**
+ * Border corner radius to be applied to the border of editting area.
+ * Default is 5.0.
+ */
+@property (nonatomic) IBInspectable CGFloat cornerRadius;
+
+/**
+ * Set validation block.
+ *
+ * @param block The block to be applied to validate input text and return valid and invalid output.
+ */
 - (void) setValidationBlock:(ValidationBlock)block;
 
 @end

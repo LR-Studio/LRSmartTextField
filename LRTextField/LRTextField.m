@@ -31,7 +31,7 @@
 
 - (instancetype) init
 {
-    self = [self initWithFrame:CGRectZero];
+    self = [self initWithFrame:CGRectMake(0, 0, 100, 50)];
     if ( !self )
     {
         return nil;
@@ -65,12 +65,7 @@
     return self;
 }
 
-- (void) prepareForInterfaceBuilder
-{
-    [self updateUI];
-}
-
-- (NSString *) rawString
+- (NSString *) rawText
 {
     if ( !_format )
     {
@@ -223,6 +218,7 @@
     [self addTarget:self action:@selector(textFieldEdittingDidEndInternal:) forControlEvents:UIControlEventEditingDidEnd];
     
     self.validationBlock = nil;
+    self.borderStyle = UITextBorderStyleNone;
 }
 
 - (void) propertyInit
@@ -234,12 +230,12 @@
     
     _enableAnimation = YES;
     _placeholderTextColor = [UIColor grayColor];
-    _hintText = @"hint";
+    _hintText = nil;
     _hintTextColor = [UIColor grayColor];
     _borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
     _borderWidth = 1.0;
     _cornerRadius = 5.0;
-    _temporaryString = [[NSString alloc] init];
+    _temporaryString = [NSString string];
     if ( self.bounds.size.height * 0.7 / 2 > 17 )
     {
         super.font = [UIFont systemFontOfSize:17.0f];

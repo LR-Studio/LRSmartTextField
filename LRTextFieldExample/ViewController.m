@@ -18,10 +18,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 30)];
+    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 50)];
     textField.placeholder = @"123456";
     textField.format = @"(###)-##";
-    textField.borderStyle = UITextBorderStyleNone;
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
         return @{ VALIDATION_SHOW_YES : @"good" };
     }];
