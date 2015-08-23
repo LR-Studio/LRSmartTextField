@@ -18,13 +18,17 @@ typedef NSDictionary *(^ValidationBlock)(LRTextField *textField, NSString *text)
 IB_DESIGNABLE
 @interface LRTextField : UITextField
 
+@property (nonatomic, copy) IBInspectable NSString *text;
 @property (nonatomic, strong) IBInspectable NSString *format;
-@property (nonatomic, strong, readonly) IBInspectable NSString *rawString;
+@property (nonatomic, copy, readonly) NSString *rawString;
+
 @property (nonatomic, assign) IBInspectable BOOL enableAnimation;
 @property (nonatomic, strong) IBInspectable NSString *placeholderText;
 @property (nonatomic, strong) IBInspectable UIColor *placeholderTextColor;
+
 @property (nonatomic, strong) IBInspectable NSString *hintText;
 @property (nonatomic, strong) IBInspectable UIColor *hintTextColor;
+
 @property (nonatomic, strong) IBInspectable UIColor *borderColor;
 @property (nonatomic, assign) IBInspectable CGFloat borderWidth;
 @property (nonatomic, assign) IBInspectable CGFloat cornerRadius;

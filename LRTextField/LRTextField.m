@@ -17,7 +17,6 @@
 
 @property (nonatomic, assign) CGFloat placeholderXInset;
 @property (nonatomic, assign) CGFloat placeholderYInset;
-@property (nonatomic, assign) UIFont *placeholderFont;
 @property (nonatomic, strong) CALayer *textLayer;
 @property (nonatomic, assign) CGFloat textXInset;
 @property (nonatomic, assign) CGFloat textYInset;
@@ -28,6 +27,8 @@
 
 @implementation LRTextField
 
+@dynamic text;
+
 - (instancetype) init
 {
     self = [self initWithFrame:CGRectZero];
@@ -36,7 +37,7 @@
         return nil;
     }
     
-    [self commonInit];
+    [self updateUI];
     return self;
 }
 
@@ -48,7 +49,7 @@
         return nil;
     }
     
-    [self commonInit];
+    [self updateUI];
     return self;
 }
 
@@ -60,9 +61,14 @@
         return nil;
     }
     
-    [self commonInit];
+    [self updateUI];
     return self;
 }
+
+//- (void) prepareForInterfaceBuilder
+//{
+//    [self updateUI];
+//}
 
 - (NSString *) rawString
 {
@@ -196,7 +202,7 @@
     self.textLayer.cornerRadius = self.cornerRadius;
 }
 
-- (void) commonInit
+- (void) updateUI
 {
     _placeholderXInset = 0;
     _placeholderYInset = 0;
@@ -207,7 +213,7 @@
     _placeholderTextColor = [UIColor grayColor];
     _hintText = @"hint";
     _hintTextColor = [UIColor grayColor];
-    _borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
+    self.borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
     _borderWidth = 1.0;
     _cornerRadius = 5.0;
     _temporaryString = [[NSString alloc] init];
