@@ -412,16 +412,16 @@
 
 - (void) layoutValidationView:(NSDictionary *)validationInfo
 {
-    if ( [validationInfo objectForKey:VALIDATION_SHOW_YES] )
+    if ( [validationInfo objectForKey:VALIDATION_INDICATOR_YES] )
     {
-        self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_SHOW_YES] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_SHOW_YES] : @"";
+        self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_INDICATOR_YES] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_INDICATOR_YES] : @"";
         self.hintLabel.textColor = [UIColor greenColor];
         self.textLayer.borderColor = [UIColor greenColor].CGColor;
         self.hintLabel.alpha = 1.0f;
     }
-    else if ( [validationInfo objectForKey:VALIDATION_SHOW_NO] )
+    else if ( [validationInfo objectForKey:VALIDATION_INDICATOR_NO] )
     {
-        self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_SHOW_NO] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_SHOW_NO] : @"";
+        self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_INDICATOR_NO] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_INDICATOR_NO] : @"";
         self.hintLabel.textColor = [UIColor redColor];
         self.textLayer.borderColor = [UIColor redColor].CGColor;
         self.hintLabel.alpha = 1.0f;

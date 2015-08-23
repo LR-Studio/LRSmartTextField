@@ -22,9 +22,8 @@
     textField.placeholder = @"123456";
     textField.format = @"(###)-##";
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
-        return @{ VALIDATION_SHOW_YES : @"good" };
+        return @{ VALIDATION_INDICATOR_YES : @"good" };
     }];
-    textField.delegate = self;
     textField.text = @"ab";
     [self.view addSubview:textField];
     
@@ -35,19 +34,5 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-
-//- (BOOL)textFieldShouldReturn:(UITextField *)textField
-//{
-//    return [textField resignFirstResponder];
-//}
-//
-//
-- (void)textFieldDidEndEditing:(LRTextField *)textField
-{
-    NSLog(@"%@", textField.rawString);
-  
-}
-
 
 @end
