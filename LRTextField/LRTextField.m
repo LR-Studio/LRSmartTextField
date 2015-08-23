@@ -380,13 +380,11 @@
                      completion:nil];
 }
 
-// Override this function to make the editing rect move to the bottom.
 - (CGRect) editingRectForBounds:(CGRect)bounds
 {
     return [self textRectForBounds:bounds];
 }
 
-// Override the function to make the placeholder rect move to the bottom.
 - (CGRect) placeholderRectForBounds:(CGRect)bounds
 {
     return [self textRectForBounds:bounds];
@@ -398,7 +396,7 @@
 }
 
 #pragma mark - Validation
-// Run validation function and set textfield.leftview and rightview and show validation results.
+
 - (void) validateText
 {
     __weak typeof(self) weakSelf = self;
