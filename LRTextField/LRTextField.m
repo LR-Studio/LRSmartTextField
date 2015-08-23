@@ -65,10 +65,10 @@
     return self;
 }
 
-//- (void) prepareForInterfaceBuilder
-//{
-//    [self updateUI];
-//}
+- (void) prepareForInterfaceBuilder
+{
+    [self updateUI];
+}
 
 - (NSString *) rawString
 {
@@ -204,28 +204,7 @@
 
 - (void) updateUI
 {
-    _placeholderXInset = 0;
-    _placeholderYInset = 0;
-    _textXInset = 6;
-    _textYInset = 0;
-    
-    _enableAnimation = YES;
-    _placeholderTextColor = [UIColor grayColor];
-    _hintText = @"hint";
-    _hintTextColor = [UIColor grayColor];
-    self.borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
-    _borderWidth = 1.0;
-    _cornerRadius = 5.0;
-    _temporaryString = [[NSString alloc] init];
-    if ( self.bounds.size.height * 0.7 / 2 > 17 )
-    {
-        super.font = [UIFont systemFontOfSize:17.0f];
-    }
-    else
-    {
-        super.font = [UIFont systemFontOfSize:self.bounds.size.height * 0.7 / 2];
-    }
-    
+    [self propertyInit];
     
     self.placeholderLabel = [UILabel new];
     self.hintLabel = [UILabel new];
@@ -239,10 +218,36 @@
     [self addSubview:self.hintLabel];
     [self.layer addSublayer:self.textLayer];
     
-    [self addTarget:self action:@selector(textFieldEdittingDidEndInternal:) forControlEvents:UIControlEventEditingDidEnd];
     [self addTarget:self action:@selector(textFieldEdittingDidBeginInternal:) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEdittingDidChangeInternal:) forControlEvents:UIControlEventEditingChanged];
+    [self addTarget:self action:@selector(textFieldEdittingDidEndInternal:) forControlEvents:UIControlEventEditingDidEnd];
+    
     self.validationBlock = nil;
+}
+
+- (void) propertyInit
+{
+    _placeholderXInset = 0;
+    _placeholderYInset = 0;
+    _textXInset = 6;
+    _textYInset = 0;
+    
+    _enableAnimation = YES;
+    _placeholderTextColor = [UIColor grayColor];
+    _hintText = @"hint";
+    _hintTextColor = [UIColor grayColor];
+    _borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
+    _borderWidth = 1.0;
+    _cornerRadius = 5.0;
+    _temporaryString = [[NSString alloc] init];
+    if ( self.bounds.size.height * 0.7 / 2 > 17 )
+    {
+        super.font = [UIFont systemFontOfSize:17.0f];
+    }
+    else
+    {
+        super.font = [UIFont systemFontOfSize:self.bounds.size.height * 0.7 / 2];
+    }
 }
 
 - (IBAction) textFieldEdittingDidBeginInternal:(UITextField *)sender
