@@ -188,15 +188,10 @@
 
 - (void) updatePlaceholder
 {
-    self.placeholderLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
+    self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
     self.placeholderLabel.text = self.placeholderText;
     self.placeholderLabel.textColor = self.placeholderTextColor;
     self.placeholderLabel.font = [self defaultFont];
-    self.placeholderLabel.alpha = 0.0f;
-    if ( self.text && self.text.length > 0 )
-    {
-        self.placeholderLabel.alpha = 1.0f;
-    }
 }
 
 - (void) updateHint
@@ -276,7 +271,6 @@
     switch ( self.style )
     {
         case LRTextFieldStyleEmail:
-            self.placeholder = @"Email";
             self.placeholderText = @"Email";
             self.format = nil;
             _validationBlock = ^NSDictionary *(LRTextField *textField, NSString *text) {
@@ -290,13 +284,11 @@
             };
             break;
         case LRTextFieldStylePhone:
-            self.placeholder = @"Phone";
             self.placeholderText = @"Phone";
             self.format = @"###-###-####";
             _validationBlock = nil;
             break;
         case LRTextFieldStylePassword:
-            self.placeholder = @"Password";
             self.placeholderText = @"Password";
             self.format = nil;
             _validationBlock = nil;
@@ -431,7 +423,7 @@
 - (void) showPlaceholderLabel
 {
     void (^showBlock)() = ^{
-        self.placeholderLabel.alpha = 1.0f;
+        [self updatePlaceholder];
         if ( _enableAnimation )
         {
             self.hintLabel.alpha = 1.0f;
@@ -447,10 +439,7 @@
 - (void) hidePlaceholderLabel
 {
     void (^hideBlock)() = ^{
-        if ( self.text.length == 0 )
-        {
-            self.placeholderLabel.alpha = 0.0f;
-        }
+        [self updatePlaceholder];
         self.hintLabel.alpha = 0.0f;
     };
     [UIView animateWithDuration:0.3f
@@ -467,6 +456,10 @@
 
 - (CGRect) placeholderRectForBounds:(CGRect)bounds
 {
+    if ( self.isFirstResponder || self.text.length > 0 )
+    {
+        return CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
+    }
     return [self textRectForBounds:bounds];
 }
 

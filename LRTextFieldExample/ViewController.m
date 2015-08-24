@@ -19,12 +19,12 @@
     [super viewDidLoad];
     
     LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 50)];
-    textField.placeholder = @"123456";
+    textField.placeholderText = @"123456";
     textField.format = @"(###)-##)-";
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
         return @{ VALIDATION_INDICATOR_YES : @"good" };
     }];
-    textField.text = @"ab";
+//    textField.text = @"ab";
 //    textField.style = LRTextFieldStylePhone;
     [self.view addSubview:textField];
     
