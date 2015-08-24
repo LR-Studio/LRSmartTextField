@@ -25,7 +25,11 @@
         return @{ VALIDATION_INDICATOR_YES : @"good" };
     }];
     textField.text = @"ab";
+    textField.style = LRTextFieldStylePhone;
     [self.view addSubview:textField];
+    
+    LRTextField *textField2 = [[LRTextField alloc] initWithFrame:CGRectMake(100, 200, 100, 50) style:LRTextFieldStyleEmail];
+    [self.view addSubview:textField2];
     
     // Do any additional setup after loading the view, typically from a nib.
 }

@@ -13,10 +13,24 @@
 
 @class LRTextField;
 
+typedef NS_ENUM(NSInteger, LRTextFieldStyle)
+{
+    LRTextFieldStyleEmail,          //Default placeholder: 'Email';   Default validation: email validation regular expression
+    LRTextFieldStylePhone,          //Default placeholder: 'Phone';   Default format: '###-###-####'
+    LRTextFieldStylePassword,       //Default placeholder: 'Password; Default: secure text entry
+    LRTextFieldStyleNone,           //Default style
+};
+
 typedef NSDictionary *(^ValidationBlock)(LRTextField *textField, NSString *text);
 
 IB_DESIGNABLE
 @interface LRTextField : UITextField
+
+/**
+ * Style of text: email, phone, password
+ * Default is nil.
+ */
+@property (nonatomic, assign) LRTextFieldStyle style;
 
 /**
  * Text to be displayed in the text field and masked if format is set.
@@ -83,6 +97,14 @@ IB_DESIGNABLE
  * Default is 5.0.
  */
 @property (nonatomic) IBInspectable CGFloat cornerRadius;
+
+/**
+ * Init with style.
+ *
+ * @param frame The frame of text field
+ * @param style The style of text field
+ */
+- (instancetype) initWithFrame:(CGRect)frame style:(LRTextFieldStyle)style;
 
 /**
  * Set validation block.
