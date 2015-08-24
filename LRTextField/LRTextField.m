@@ -313,6 +313,7 @@
 
 - (IBAction) textFieldEdittingDidEndInternal:(UITextField *)sender
 {
+    [self autoFillFormat];
     [self runDidEndAnimation];
 }
 
@@ -376,6 +377,22 @@
         last++;
     }
     
+    [super setText:result];
+    self.temporaryString = self.text;
+}
+
+- (void) autoFillFormat
+{
+    NSMutableString *result = [NSMutableString stringWithString:self.text];
+    for ( NSInteger i = self.text.length; i < self.format.length; i++ )
+    {
+        unichar charAtMask = [self.format characterAtIndex:i];
+        if ( charAtMask == '#' )
+        {
+            return;
+        }
+        [result appendFormat:@"%c", charAtMask];
+    }
     [super setText:result];
     self.temporaryString = self.text;
 }
