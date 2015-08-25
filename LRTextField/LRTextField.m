@@ -94,8 +94,9 @@
 {
     if ( text )
     {
-        [self updatePlaceholder];
-        [self updateHint];
+        [self runDidBeginAnimation];
+//        [self updatePlaceholder];
+//        [self updateHint];
     }
     if ( !_format )
     {
@@ -391,13 +392,13 @@
 
 - (void) runDidBeginAnimation
 {
-    [self layoutPlaceholderLabel];
-    [self showPlaceholderLabel];
+//    [self layoutPlaceholderLabel];
+    [self showLabel];
 }
 
 - (void) runDidEndAnimation
 {
-    [self hidePlaceholderLabel];
+    [self hideLabel];
     if ( self.validationBlock && self.text.length > 0 )
     {
         [self validateText];
@@ -414,13 +415,13 @@
     [self sanitizeStrings];
 }
 
-- (void) layoutPlaceholderLabel
-{
-    [self updateHint];
-    [self updateLayer];
-}
+//- (void) layoutPlaceholderLabel
+//{
+//    [self updateHint];
+//    [self updateLayer];
+//}
 
-- (void) showPlaceholderLabel
+- (void) showLabel
 {
     void (^showBlock)() = ^{
         [self updatePlaceholder];
@@ -436,7 +437,7 @@
                      completion:nil];
 }
 
-- (void) hidePlaceholderLabel
+- (void) hideLabel
 {
     void (^hideBlock)() = ^{
         [self updatePlaceholder];
