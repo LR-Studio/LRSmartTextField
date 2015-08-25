@@ -43,7 +43,7 @@
     }
     
     _style = LRTextFieldStyleNone;
-    [self initUI];
+    [self updateUI];
     return self;
 }
 
@@ -61,7 +61,7 @@
     }
     
     _style = style;
-    [self initUI];
+    [self updateUI];
     return self;
 }
 
@@ -126,19 +126,6 @@
     }
 }
 
-<<<<<<< HEAD
-=======
-- (void) setPlaceholder:(NSString *)placeholder
-{
-    [super setPlaceholder:placeholder];     //--------!
-    if ( !_placeholderText )
-    {
-        _placeholderText = placeholder;
-    }
-    [self updatePlaceholder];
-}
-
->>>>>>> 091298a625ec07859579d4d2a0a6581256672a8c
 - (void) setPlaceholderText:(NSString *)placeholderText
 {
     _placeholderText = placeholderText;
@@ -214,13 +201,9 @@
     return CGRectOffset(bounds, self.textXInset, self.textYInset + [self getPlaceholderHeight] / 2);
 }
 
-<<<<<<< HEAD
 #pragma mark - Update Method
 
 - (void) updateUI
-=======
-- (void) initUI
->>>>>>> 091298a625ec07859579d4d2a0a6581256672a8c
 {
     [self propertyInit];
     
