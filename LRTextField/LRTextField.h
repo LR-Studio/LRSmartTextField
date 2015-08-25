@@ -57,12 +57,6 @@ IB_DESIGNABLE
 @property (nonatomic) IBInspectable BOOL enableAnimation;
 
 /**
- * Text to be displayed in the floating placeholder label.
- * Default is the same as placeholder.
- */
-@property (nonatomic, copy) IBInspectable NSString *placeholderText;
-
-/**
  * Text color to be applied to floating placeholder text.
  * Default is [UIColor grayColor].
  */
@@ -79,6 +73,12 @@ IB_DESIGNABLE
  * Default is [UIColor grayColor].
  */
 @property (nonatomic, strong) IBInspectable UIColor *hintTextColor;
+
+/**
+ * Background color to be applied to the input area.
+ * Default is
+ */
+@property (nonatomic, strong) IBInspectable UIColor *inputBackgroundColor;
 
 /**
  * Border color to be applied to the border of editting area.

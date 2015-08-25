@@ -86,12 +86,6 @@
     return mutableStr;
 }
 
-- (void) setStyle:(LRTextFieldStyle)style
-{
-    _style = style;
-    [self updateStyle];
-}
-
 - (void) setText:(NSString *)text
 {
     if ( !_format )
@@ -101,6 +95,18 @@
     }
     
     [self renderString:text];
+}
+
+- (void) setPlaceholder:(NSString *)placeholder
+{
+    [super setPlaceholder:placeholder];
+    [self updatePlaceholder];
+}
+
+- (void) setStyle:(LRTextFieldStyle)style
+{
+    _style = style;
+    [self updateStyle];
 }
 
 - (void) setFormat:(NSString *)format
@@ -116,12 +122,6 @@
 - (void) setEnableAnimation:(BOOL)enableAnimation
 {
     _enableAnimation = enableAnimation;
-    [self updatePlaceholder];
-}
-
-- (void) setPlaceholderText:(NSString *)placeholderText
-{
-    _placeholderText = placeholderText;
     [self updatePlaceholder];
 }
 
@@ -141,6 +141,12 @@
 {
     _hintTextColor = hintTextColor;
     [self updateHint];
+}
+
+- (void) setInputBackgroundColor:(UIColor *)inputBackgroundColor
+{
+    _inputBackgroundColor = inputBackgroundColor;
+    [self updateLayer];
 }
 
 - (void) setBorderColor:(UIColor *)borderColor
@@ -229,9 +235,10 @@
     _textYInset = 0;
     
     _enableAnimation = YES;
-    _placeholderTextColor = [UIColor grayColor];
+    _placeholderTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
     _hintText = nil;
-    _hintTextColor = [UIColor grayColor];
+    _hintTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
+    _inputBackgroundColor = [UIColor whiteColor];
     _borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
     _borderWidth = 1.0;
     _cornerRadius = 5.0;
@@ -249,7 +256,7 @@
 - (void) updatePlaceholder
 {
     self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
-    self.placeholderLabel.text = self.placeholderText;
+    self.placeholderLabel.text = self.placeholder;
     self.placeholderLabel.textColor = self.placeholderTextColor;
     self.placeholderLabel.font = [self defaultFont];
 }
@@ -271,6 +278,7 @@
 - (void) updateLayer
 {
     self.textLayer.frame = CGRectMake(self.bounds.origin.x, self.bounds.origin.y + [self getPlaceholderHeight], self.bounds.size.width, self.bounds.size.height - [self getPlaceholderHeight]);
+    self.textLayer.backgroundColor = self.inputBackgroundColor.CGColor;
     self.textLayer.borderColor = self.borderColor.CGColor;
     self.textLayer.borderWidth = self.borderWidth;
     self.textLayer.cornerRadius = self.cornerRadius;
@@ -281,7 +289,7 @@
     switch ( self.style )
     {
         case LRTextFieldStyleEmail:
-            self.placeholderText = @"Email";
+            self.placeholder = @"Email";
             self.format = nil;
             _validationBlock = ^NSDictionary *(LRTextField *textField, NSString *text) {
                 NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";
@@ -294,13 +302,13 @@
             };
             break;
         case LRTextFieldStylePhone:
-            self.placeholderText = @"Phone";
+            self.placeholder = @"Phone";
             self.keyboardType = UIKeyboardTypePhonePad;
             self.format = @"###-###-####";
             _validationBlock = nil;
             break;
         case LRTextFieldStylePassword:
-            self.placeholderText = @"Password";
+            self.placeholder = @"Password";
             self.secureTextEntry = YES;
             self.format = nil;
             _validationBlock = nil;
