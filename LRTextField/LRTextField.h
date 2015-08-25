@@ -33,12 +33,6 @@ IB_DESIGNABLE
 @property (nonatomic, assign) LRTextFieldStyle style;
 
 /**
- * Text to be displayed in the text field and masked if format is set.
- * Default is nil.
- */
-@property (nonatomic, copy) IBInspectable NSString *text;
-
-/**
  * Mask of input text.
  * Default is nil.
  */

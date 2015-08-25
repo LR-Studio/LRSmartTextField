@@ -27,7 +27,7 @@
 
 @implementation LRTextField
 
-@dynamic text;
+#pragma mark - Init Method
 
 - (instancetype) init
 {
@@ -65,6 +65,8 @@
     return self;
 }
 
+#pragma mark - Access Method
+
 - (NSString *) rawText
 {
     if ( !_format )
@@ -92,12 +94,6 @@
 
 - (void) setText:(NSString *)text
 {
-    if ( text )
-    {
-        [self runDidBeginAnimation];
-//        [self updatePlaceholder];
-//        [self updateHint];
-    }
     if ( !_format )
     {
         [super setText:text];
@@ -128,16 +124,6 @@
     {
         self.placeholderLabel.hidden = YES;
     }
-}
-
-- (void) setPlaceholder:(NSString *)placeholder
-{
-    [super setPlaceholder:placeholder];
-    if ( !_placeholderText )
-    {
-        _placeholderText = placeholder;
-    }
-    [self updatePlaceholder];
 }
 
 - (void) setPlaceholderText:(NSString *)placeholderText
@@ -187,35 +173,35 @@
     _validationBlock = block;
 }
 
-- (void) updatePlaceholder
+#pragma mark - Override method
+
+- (void) prepareForInterfaceBuilder
 {
-    self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
-    self.placeholderLabel.text = self.placeholderText;
-    self.placeholderLabel.textColor = self.placeholderTextColor;
-    self.placeholderLabel.font = [self defaultFont];
+    [self updatePlaceholder];
+    [self updateHint];
+    [self updateLayer];
 }
 
-- (void) updateHint
+- (CGRect) editingRectForBounds:(CGRect)bounds
 {
-    self.hintLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
-    self.hintLabel.text = self.hintText;
-    self.hintLabel.textColor = self.hintTextColor;
-    self.hintLabel.font = [self defaultFont];
-    self.hintLabel.textAlignment = NSTextAlignmentRight;
-    self.hintLabel.alpha = 0.0f;
-    if ( self.text && self.text.length > 0 )
+    return [self textRectForBounds:bounds];
+}
+
+- (CGRect) placeholderRectForBounds:(CGRect)bounds
+{
+    if ( self.isFirstResponder || self.text.length > 0 )
     {
-        self.hintLabel.alpha = 1.0f;
+        return CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
     }
+    return [self textRectForBounds:bounds];
 }
 
-- (void) updateLayer
+- (CGRect) textRectForBounds:(CGRect)bounds
 {
-    self.textLayer.frame = CGRectMake(self.bounds.origin.x, self.bounds.origin.y + [self getPlaceholderHeight], self.bounds.size.width, self.bounds.size.height - [self getPlaceholderHeight]);
-    self.textLayer.borderColor = self.borderColor.CGColor;
-    self.textLayer.borderWidth = self.borderWidth;
-    self.textLayer.cornerRadius = self.cornerRadius;
+    return CGRectOffset(bounds, self.textXInset, self.textYInset + [self getPlaceholderHeight] / 2);
 }
+
+#pragma mark - Update Method
 
 - (void) updateUI
 {
@@ -267,6 +253,36 @@
     }
 }
 
+- (void) updatePlaceholder
+{
+    self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
+    self.placeholderLabel.text = self.placeholderText;
+    self.placeholderLabel.textColor = self.placeholderTextColor;
+    self.placeholderLabel.font = [self defaultFont];
+}
+
+- (void) updateHint
+{
+    self.hintLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
+    self.hintLabel.text = self.hintText;
+    self.hintLabel.textColor = self.hintTextColor;
+    self.hintLabel.font = [self defaultFont];
+    self.hintLabel.textAlignment = NSTextAlignmentRight;
+    self.hintLabel.alpha = 0.0f;
+    if ( self.text && self.text.length > 0 )
+    {
+        self.hintLabel.alpha = 1.0f;
+    }
+}
+
+- (void) updateLayer
+{
+    self.textLayer.frame = CGRectMake(self.bounds.origin.x, self.bounds.origin.y + [self getPlaceholderHeight], self.bounds.size.width, self.bounds.size.height - [self getPlaceholderHeight]);
+    self.textLayer.borderColor = self.borderColor.CGColor;
+    self.textLayer.borderWidth = self.borderWidth;
+    self.textLayer.cornerRadius = self.cornerRadius;
+}
+
 - (void) updateStyle
 {
     switch ( self.style )
@@ -299,6 +315,8 @@
     }
 }
 
+#pragma mark - Target Method
+
 - (IBAction) textFieldEdittingDidBeginInternal:(UITextField *)sender
 {
     [self runDidBeginAnimation];
@@ -314,6 +332,8 @@
 {
     [self runDidChange];
 }
+
+#pragma mark - Private Method
 
 - (UIFont *) defaultFont
 {
@@ -392,7 +412,6 @@
 
 - (void) runDidBeginAnimation
 {
-//    [self layoutPlaceholderLabel];
     [self showLabel];
 }
 
@@ -414,12 +433,6 @@
     
     [self sanitizeStrings];
 }
-
-//- (void) layoutPlaceholderLabel
-//{
-//    [self updateHint];
-//    [self updateLayer];
-//}
 
 - (void) showLabel
 {
@@ -448,25 +461,6 @@
                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
                      animations:hideBlock
                      completion:nil];
-}
-
-- (CGRect) editingRectForBounds:(CGRect)bounds
-{
-    return [self textRectForBounds:bounds];
-}
-
-- (CGRect) placeholderRectForBounds:(CGRect)bounds
-{
-    if ( self.isFirstResponder || self.text.length > 0 )
-    {
-        return CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
-    }
-    return [self textRectForBounds:bounds];
-}
-
-- (CGRect) textRectForBounds:(CGRect)bounds
-{
-    return CGRectOffset(bounds, self.textXInset, self.textYInset + [self getPlaceholderHeight] / 2);
 }
 
 #pragma mark - Validation
