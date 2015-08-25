@@ -18,10 +18,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 50)];
+    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 30)];
     textField.placeholderText = @"123456";
     textField.format = @"(###)-##)-";
-    textField.font = [UIFont systemFontOfSize:59];
+//    textField.font = [UIFont systemFontOfSize:59];
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
 //        [NSThread sleepForTimeInterval:3.0];
         return @{ VALIDATION_INDICATOR_YES : @"good" };
@@ -31,8 +31,8 @@
 //    textField.style = LRTextFieldStylePhone;
     [self.view addSubview:textField];
     
-    LRTextField *textField2 = [[LRTextField alloc] initWithFrame:CGRectMake(50, 100, 100, 50) style:LRTextFieldStylePassword];
-    [self.view addSubview:textField2];
+//    LRTextField *textField2 = [[LRTextField alloc] initWithFrame:CGRectMake(50, 100, 100, 50) style:LRTextFieldStylePassword];
+//    [self.view addSubview:textField2];
     
     // Do any additional setup after loading the view, typically from a nib.
 }

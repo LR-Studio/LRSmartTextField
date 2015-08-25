@@ -207,7 +207,9 @@
     [self propertyInit];
     
     self.placeholderLabel = [UILabel new];
+    _placeholderLabel.font = [self defaultFont];
     self.hintLabel = [UILabel new];
+    _hintLabel.font = [self defaultFont];
     self.textLayer = [CALayer layer];
     
     [self updatePlaceholder];
@@ -234,18 +236,6 @@
     _textXInset = 6;
     _textYInset = 0;
     
-    _enableAnimation = YES;
-    _placeholderText = nil;
-    _placeholderTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
-    _placeholderLabel.font = [self defaultFont];
-    _hintText = nil;
-    _hintTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
-    _hintLabel.font = [self defaultFont];
-    _inputBackgroundColor = [UIColor clearColor];
-    _borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
-    _borderWidth = 1.0;
-    _cornerRadius = 5.0;
-    _temporaryString = [NSString string];
     if ( self.bounds.size.height * 0.7 / 2 > 17 )
     {
         self.font = [UIFont systemFontOfSize:17.0f];
@@ -254,6 +244,17 @@
     {
         self.font = [UIFont systemFontOfSize:self.bounds.size.height * 0.7 / 2];
     }
+    
+    _enableAnimation = YES;
+    _placeholderText = nil;
+    _placeholderTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
+    _hintText = nil;
+    _hintTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
+    _inputBackgroundColor = [UIColor clearColor];
+    _borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
+    _borderWidth = 1.0;
+    _cornerRadius = 5.0;
+    _temporaryString = [NSString string];
 }
 
 - (void) updatePlaceholder
