@@ -28,7 +28,7 @@
 //    textField.style = LRTextFieldStylePhone;
     [self.view addSubview:textField];
     
-    LRTextField *textField2 = [[LRTextField alloc] initWithFrame:CGRectMake(100, 200, 100, 50) style:LRTextFieldStyleEmail];
+    LRTextField *textField2 = [[LRTextField alloc] initWithFrame:CGRectMake(50, 100, 100, 50) style:LRTextFieldStylePassword];
     [self.view addSubview:textField2];
     
     // Do any additional setup after loading the view, typically from a nib.

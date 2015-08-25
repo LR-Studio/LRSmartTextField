@@ -43,7 +43,7 @@
     }
     
     _style = LRTextFieldStyleNone;
-    [self updateUI];
+    [self initUI];
     return self;
 }
 
@@ -61,7 +61,7 @@
     }
     
     _style = style;
-    [self updateUI];
+    [self initUI];
     return self;
 }
 
@@ -113,7 +113,7 @@
     }
 }
 
-- (void) setEnableAnimation:(BOOL)enableAnimation
+- (void) setEnableAnimation:(BOOL)enableAnimation //--------!
 {
     _enableAnimation = enableAnimation;
     if ( _enableAnimation )
@@ -126,6 +126,19 @@
     }
 }
 
+<<<<<<< HEAD
+=======
+- (void) setPlaceholder:(NSString *)placeholder
+{
+    [super setPlaceholder:placeholder];     //--------!
+    if ( !_placeholderText )
+    {
+        _placeholderText = placeholder;
+    }
+    [self updatePlaceholder];
+}
+
+>>>>>>> 091298a625ec07859579d4d2a0a6581256672a8c
 - (void) setPlaceholderText:(NSString *)placeholderText
 {
     _placeholderText = placeholderText;
@@ -201,9 +214,13 @@
     return CGRectOffset(bounds, self.textXInset, self.textYInset + [self getPlaceholderHeight] / 2);
 }
 
+<<<<<<< HEAD
 #pragma mark - Update Method
 
 - (void) updateUI
+=======
+- (void) initUI
+>>>>>>> 091298a625ec07859579d4d2a0a6581256672a8c
 {
     [self propertyInit];
     
@@ -302,11 +319,13 @@
             break;
         case LRTextFieldStylePhone:
             self.placeholderText = @"Phone";
+            self.keyboardType = UIKeyboardTypePhonePad;
             self.format = @"###-###-####";
             _validationBlock = nil;
             break;
         case LRTextFieldStylePassword:
             self.placeholderText = @"Password";
+            self.secureTextEntry = YES;
             self.format = nil;
             _validationBlock = nil;
             break;
@@ -443,7 +462,7 @@
             self.hintLabel.alpha = 1.0f;
         }
     };
-    [UIView animateWithDuration:0.3f
+    [UIView animateWithDuration:0.1f
                           delay:0.0f
                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
                      animations:showBlock
@@ -456,7 +475,7 @@
         [self updatePlaceholder];
         self.hintLabel.alpha = 0.0f;
     };
-    [UIView animateWithDuration:0.3f
+    [UIView animateWithDuration:0.1f
                           delay:0.0f
                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
                      animations:hideBlock
