@@ -22,8 +22,10 @@
     textField.placeholderText = @"123456";
     textField.format = @"(###)-##)-";
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
+//        [NSThread sleepForTimeInterval:3.0];
         return @{ VALIDATION_INDICATOR_YES : @"good" };
     }];
+    textField.enableAnimation = NO;
 //    textField.text = @"ab";
 //    textField.style = LRTextFieldStylePhone;
     [self.view addSubview:textField];

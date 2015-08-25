@@ -113,17 +113,10 @@
     }
 }
 
-- (void) setEnableAnimation:(BOOL)enableAnimation //--------!
+- (void) setEnableAnimation:(BOOL)enableAnimation
 {
     _enableAnimation = enableAnimation;
-    if ( _enableAnimation )
-    {
-        self.placeholderLabel.hidden = NO;
-    }
-    else
-    {
-        self.placeholderLabel.hidden = YES;
-    }
+    [self updatePlaceholder];
 }
 
 - (void) setPlaceholderText:(NSString *)placeholderText
@@ -189,7 +182,7 @@
 
 - (CGRect) placeholderRectForBounds:(CGRect)bounds
 {
-    if ( self.isFirstResponder || self.text.length > 0 )
+    if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation)
     {
         return CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
     }
@@ -414,6 +407,8 @@
 
 - (void) runDidBeginAnimation
 {
+    [self updateHint];
+    [self updateLayer];
     [self showLabel];
 }
 
@@ -469,13 +464,30 @@
 
 - (void) validateText
 {
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    indicator.frame = CGRectMake(self.textLayer.frame.size.width - self.textLayer.frame.size.height,
+                                 0,
+                                 self.textLayer.frame.size.height,
+                                 self.textLayer.frame.size.height);
+    [self.textLayer addSublayer:indicator.layer];
+    [indicator startAnimating];
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSDictionary *validationInfo = weakSelf.validationBlock(weakSelf, weakSelf.rawText);
         dispatch_async(dispatch_get_main_queue(), ^{
+            [indicator stopAnimating];
+            [weakSelf.rightView removeFromSuperview];
+            weakSelf.rightView = nil;
             [self runValidationViewAnimation:validationInfo];
         });
     });
+}
+
+- (void) runValidationViewAnimation:(NSDictionary *)validationInfo
+{
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+        [self layoutValidationView:validationInfo];
+    } completion:nil];
 }
 
 - (void) layoutValidationView:(NSDictionary *)validationInfo
@@ -494,13 +506,6 @@
         self.textLayer.borderColor = [UIColor redColor].CGColor;
         self.hintLabel.alpha = 1.0f;
     }
-}
-
-- (void) runValidationViewAnimation:(NSDictionary *)validationInfo
-{
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
-        [self layoutValidationView:validationInfo];
-    } completion:nil];
 }
 
 - (CGFloat) getPlaceholderHeight
