@@ -31,7 +31,7 @@
 
 - (instancetype) init
 {
-    return [self initWithFrame:CGRectMake(0, 0, 100, 50)];
+    return [self initWithFrame:CGRectMake(0, 0, 100, 40)];
 }
 
 - (instancetype) initWithCoder:(NSCoder *)coder
@@ -95,6 +95,14 @@
     }
     
     [self renderString:text];
+}
+
+- (void) setFont:(UIFont *)font
+{
+    [super setFont:font];
+    [self updatePlaceholder];
+    [self updateHint];
+    [self updateLayer];
 }
 
 - (void) setStyle:(LRTextFieldStyle)style
@@ -207,9 +215,7 @@
     [self propertyInit];
     
     self.placeholderLabel = [UILabel new];
-    _placeholderLabel.font = [self defaultFont];
     self.hintLabel = [UILabel new];
-    _hintLabel.font = [self defaultFont];
     self.textLayer = [CALayer layer];
     
     [self updatePlaceholder];
@@ -223,9 +229,7 @@
     [self addTarget:self action:@selector(textFieldEdittingDidBeginInternal:) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEdittingDidChangeInternal:) forControlEvents:UIControlEventEditingChanged];
     [self addTarget:self action:@selector(textFieldEdittingDidEndInternal:) forControlEvents:UIControlEventEditingDidEnd];
-    
-    self.validationBlock = nil;
-    self.borderStyle = UITextBorderStyleNone;
+
     [self updateStyle];
 }
 
@@ -235,15 +239,6 @@
     _placeholderYInset = 0;
     _textXInset = 6;
     _textYInset = 0;
-    
-    if ( self.bounds.size.height * 0.7 / 2 > 17 )
-    {
-        self.font = [UIFont systemFontOfSize:17.0f];
-    }
-    else
-    {
-        self.font = [UIFont systemFontOfSize:self.bounds.size.height * 0.7 / 2];
-    }
     
     _enableAnimation = YES;
     _placeholderText = nil;
@@ -255,11 +250,15 @@
     _borderWidth = 1.0;
     _cornerRadius = 5.0;
     _temporaryString = [NSString string];
+    _validationBlock = nil;
+    self.font = [UIFont systemFontOfSize:14];
+    self.borderStyle = UITextBorderStyleNone;
 }
 
 - (void) updatePlaceholder
 {
     self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
+    self.placeholderLabel.font = [self defaultFont];
     self.placeholderLabel.text = self.placeholderText;
     self.placeholderLabel.textColor = self.placeholderTextColor;
 }
@@ -267,6 +266,7 @@
 - (void) updateHint
 {
     self.hintLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
+    self.hintLabel.font = [self defaultFont];
     self.hintLabel.text = self.hintText;
     self.hintLabel.textColor = self.hintTextColor;
     self.hintLabel.textAlignment = NSTextAlignmentRight;
@@ -520,7 +520,7 @@
 
 - (CGFloat) getPlaceholderHeight
 {
-    return self.placeholderYInset + self.placeholderLabel.font.lineHeight;
+    return self.placeholderYInset + [self defaultFont].lineHeight;
 }
 
 @end

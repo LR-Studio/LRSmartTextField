@@ -18,14 +18,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 30)];
+    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 40)];
     textField.placeholderText = @"123456";
     textField.format = @"(###)-##)-";
-//    textField.font = [UIFont systemFontOfSize:59];
-    [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
-//        [NSThread sleepForTimeInterval:3.0];
-        return @{ VALIDATION_INDICATOR_YES : @"good" };
-    }];
+//    textField.font = [UIFont systemFontOfSize:14];
+//    [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
+////        [NSThread sleepForTimeInterval:3.0];
+//        return @{ VALIDATION_INDICATOR_YES : @"good" };
+//    }];
 //    textField.enableAnimation = NO;
 //    textField.text = @"ab";
 //    textField.style = LRTextFieldStylePhone;
