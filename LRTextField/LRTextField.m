@@ -13,6 +13,7 @@
 
 @interface LRTextField ()
 
+@property (nonatomic, copy) NSString *placeholderText;
 @property (nonatomic) UILabel *placeholderLabel;
 @property (nonatomic) UILabel *hintLabel;
 
@@ -20,6 +21,9 @@
 @property (nonatomic, assign) CGFloat placeholderYInset;
 @property (nonatomic, strong) ValidationBlock validationBlock;
 @property (nonatomic, strong) NSString *temporaryString;
+
+@property (nonatomic, strong) UIColor *validationGreen;
+@property (nonatomic, strong) UIColor *validationRed;
 
 @end
 
@@ -41,6 +45,7 @@
     }
     
     _style = LRTextFieldStyleNone;
+    _floatingLabelHeight = self.font.pointSize * fontScale + fontOffset;
     [self updateUI];
     return self;
 }
@@ -142,9 +147,16 @@
     [self updatePlaceholder];
 }
 
-- (void) setPlaceholderText:(NSString *)placeholderText
+//- (void) setPlaceholderText:(NSString *)placeholderText
+//{
+//    _placeholderText = placeholderText;
+//    [self updatePlaceholder];
+//}
+
+- (void) setPlaceholder:(NSString *)placeholder
 {
-    _placeholderText = placeholderText;
+    [super setPlaceholder:nil];
+    _placeholderText = placeholder;
     [self updatePlaceholder];
 }
 
@@ -205,7 +217,7 @@
     _placeholderYInset = 2;
     
     _enableAnimation = YES;
-    _placeholderText = nil;
+    self.placeholder = self.placeholder;
     _placeholderTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
     _hintText = nil;
     _hintTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
@@ -213,6 +225,9 @@
     _validationBlock = nil;
     self.clipsToBounds = NO;
     self.borderStyle = UITextBorderStyleRoundedRect;
+    
+    _validationGreen = [UIColor colorWithRed:35.0/255.0 green:199.0/255.0 blue:90.0/255.0 alpha:1.0];
+    _validationRed = [UIColor colorWithRed:225.0/255.0 green:51.0/255.0 blue:40.0/255.0 alpha:1.0];
 }
 
 - (void) updatePlaceholder
@@ -224,6 +239,10 @@
     if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation )
     {
         self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - fontOffset];
+        //self.placeholderLabel.textColor = self.placeholderTextColor;
+    }
+    if (self.isEditing)
+    {
         self.placeholderLabel.textColor = self.placeholderTextColor;
     }
 }
@@ -356,6 +375,7 @@
     void (^showBlock)() = ^{
         [self updatePlaceholder];
         [self updateHint];
+        self.layer.borderColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0].CGColor;
     };
     [UIView animateWithDuration:0.1f
                           delay:0.0f
@@ -423,25 +443,26 @@
 
 - (void) layoutValidationView:(NSDictionary *)validationInfo
 {
+
     if ( [validationInfo objectForKey:VALIDATION_INDICATOR_YES] )
     {
         self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_INDICATOR_YES] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_INDICATOR_YES] : @"";
-        self.hintLabel.textColor = [UIColor greenColor];
+        self.hintLabel.textColor = _validationGreen;
         self.hintLabel.alpha = 1.0f;
-        if ( self.borderStyle != UITextBorderStyleNone )
-        {
-            self.layer.borderColor = [UIColor greenColor].CGColor;
-        }
+        
+        self.layer.borderWidth = 1.0;
+        self.layer.cornerRadius = 6.0;
+        self.layer.borderColor = _validationGreen.CGColor;
     }
     else if ( [validationInfo objectForKey:VALIDATION_INDICATOR_NO] )
     {
         self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_INDICATOR_NO] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_INDICATOR_NO] : @"";
-        self.hintLabel.textColor = [UIColor redColor];
+        self.hintLabel.textColor = _validationRed;
         self.hintLabel.alpha = 1.0f;
-        if ( self.borderStyle != UITextBorderStyleNone )
-        {
-            self.layer.borderColor = [UIColor redColor].CGColor;
-        }
+        
+        self.layer.borderWidth = 1.0;
+        self.layer.cornerRadius = 6.0;
+        self.layer.borderColor = _validationRed.CGColor;
     }
 }
 
