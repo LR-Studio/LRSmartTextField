@@ -23,14 +23,14 @@
     textField.hintText = @"hint";
     textField.format = @"(###)-##)-";
     textField.placeholderTextColor = [UIColor blueColor];
-    [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
-        [NSThread sleepForTimeInterval:3.0];
-        return @{ VALIDATION_INDICATOR_YES : @"good" };
-    }];
+//    [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
+//        [NSThread sleepForTimeInterval:3.0];
+//        return @{ VALIDATION_INDICATOR_YES : @"good" };
+//    }];
 //    textField.enableAnimation = NO;
 //    textField.text = @"ab";
 //    textField.style = LRTextFieldStylePhone;
-    textField.frame = CGRectMake(100, 100, 200, 200);
+//    textField.frame = CGRectMake(100, 100, 200, 200);
     [self.view addSubview:textField];
     
 //    LRTextField *textField2 = [[LRTextField alloc] initWithFrame:CGRectMake(50, 100, 100, 50) style:LRTextFieldStylePassword];

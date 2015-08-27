@@ -113,6 +113,12 @@
     [self renderString:text];
 }
 
+- (void) setFont:(UIFont *)font
+{
+    [super setFont:font];
+    self.floatingLabelHeight = font.pointSize * fontScale + fontOffset;
+}
+
 - (void) setStyle:(LRTextFieldStyle)style
 {
     _style = style;
@@ -170,7 +176,7 @@
 
 - (CGRect) placeholderRectForBounds:(CGRect)bounds
 {
-    if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation )
+    if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
     {
         return CGRectMake(self.placeholderXInset, - self.placeholderYInset - self.floatingLabelHeight, bounds.size.width - 2 * self.placeholderXInset, self.floatingLabelHeight);
     }
@@ -220,11 +226,18 @@
     self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
     self.placeholderLabel.font = self.font;
     self.placeholderLabel.text = self.placeholderText;
-    self.placeholderLabel.textColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
-    if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation )
+    if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
     {
         self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - fontOffset];
+    }
+    
+    if ( self.isEditing )
+    {
         self.placeholderLabel.textColor = self.placeholderTextColor;
+    }
+    else
+    {
+        self.placeholderLabel.textColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
     }
 }
 
@@ -236,7 +249,7 @@
     self.hintLabel.textColor = self.hintTextColor;
     self.hintLabel.textAlignment = NSTextAlignmentRight;
     self.hintLabel.alpha = 0.0f;
-    if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation )
+    if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
     {
         self.hintLabel.alpha = 1.0f;
     }
@@ -357,7 +370,7 @@
         [self updatePlaceholder];
         [self updateHint];
     };
-    [UIView animateWithDuration:0.1f
+    [UIView animateWithDuration:0.3f
                           delay:0.0f
                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
                      animations:showBlock
@@ -370,7 +383,7 @@
         [self updatePlaceholder];
         self.hintLabel.alpha = 0.0f;
     };
-    [UIView animateWithDuration:0.1f
+    [UIView animateWithDuration:0.3f
                           delay:0.0f
                         options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
                      animations:hideBlock
