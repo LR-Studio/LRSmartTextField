@@ -30,6 +30,7 @@
 //    textField.enableAnimation = NO;
 //    textField.text = @"ab";
 //    textField.style = LRTextFieldStylePhone;
+//    textField.frame = CGRectMake(100, 100, 200, 200);
     [self.view addSubview:textField];
     
 //    LRTextField *textField2 = [[LRTextField alloc] initWithFrame:CGRectMake(50, 100, 100, 50) style:LRTextFieldStylePassword];
