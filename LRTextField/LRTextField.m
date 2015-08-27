@@ -29,7 +29,7 @@
 
 - (instancetype) init
 {
-    return [self initWithFrame:CGRectMake(0, 0, 97, 30)];
+    return [self initWithFrame:CGRectZero];
 }
 
 - (instancetype) initWithCoder:(NSCoder *)coder
