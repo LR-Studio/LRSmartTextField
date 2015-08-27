@@ -39,6 +39,12 @@ IB_DESIGNABLE
 @property (nonatomic, assign) LRTextFieldStyle style;
 
 /**
+ * Height of floating Label.
+ * Default is 0.0f.
+ */
+@property (nonatomic, assign) IBInspectable CGFloat floatingLabelHeight;
+
+/**
  * Mask of input text.
  * Default is nil.
  */
@@ -80,29 +86,9 @@ IB_DESIGNABLE
  */
 @property (nonatomic, strong) IBInspectable UIColor *hintTextColor;
 
-/**
- * Background color to be applied to the input area.
- * Default is [UiColor clearColor].
- */
-@property (nonatomic, strong) IBInspectable UIColor *inputBackgroundColor;
 
-/**
- * Border color to be applied to the border of editting area.
- * Default is [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0].
- */
-@property (nonatomic, strong) IBInspectable UIColor *borderColor;
 
-/**
- * Border width to be applied to the border of editting area.
- * Default is 1.0.
- */
-@property (nonatomic) IBInspectable CGFloat borderWidth;
-
-/**
- * Border corner radius to be applied to the border of editting area.
- * Default is 5.0.
- */
-@property (nonatomic) IBInspectable CGFloat cornerRadius;
+- (instancetype) initWithFrame:(CGRect)frame labelHeight:(CGFloat)labelHeight;
 
 /**
  * Init with style.
@@ -110,7 +96,7 @@ IB_DESIGNABLE
  * @param frame The frame of text field
  * @param style The style of text field
  */
-- (instancetype) initWithFrame:(CGRect)frame style:(LRTextFieldStyle)style;
+- (instancetype) initWithFrame:(CGRect)frame labelHeight:(CGFloat)labelHeight style:(LRTextFieldStyle)style;
 
 /**
  * Set validation block.

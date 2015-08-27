@@ -17,9 +17,6 @@
 
 @property (nonatomic, assign) CGFloat placeholderXInset;
 @property (nonatomic, assign) CGFloat placeholderYInset;
-@property (nonatomic, strong) CALayer *textLayer;
-@property (nonatomic, assign) CGFloat textXInset;
-@property (nonatomic, assign) CGFloat textYInset;
 @property (nonatomic, strong) ValidationBlock validationBlock;
 @property (nonatomic, strong) NSString *temporaryString;
 
@@ -31,7 +28,7 @@
 
 - (instancetype) init
 {
-    return [self initWithFrame:CGRectMake(0, 0, 100, 40)];
+    return [self initWithFrame:CGRectMake(0, 0, 97, 30)];
 }
 
 - (instancetype) initWithCoder:(NSCoder *)coder
@@ -49,10 +46,25 @@
 
 - (instancetype) initWithFrame:(CGRect)frame
 {
-    return [self initWithFrame:frame style:LRTextFieldStyleNone];
+    self = [super initWithFrame:frame];
+    if ( !self )
+    {
+        return nil;
+    }
+    
+    _style = LRTextFieldStyleNone;
+    _floatingLabelHeight = self.font.pointSize * 0.7 + 1;
+    [self updateUI];
+    
+    return self;
 }
 
-- (instancetype) initWithFrame:(CGRect)frame style:(LRTextFieldStyle)style
+- (instancetype) initWithFrame:(CGRect)frame labelHeight:(CGFloat)labelHeight
+{
+    return [self initWithFrame:frame labelHeight:labelHeight style:LRTextFieldStyleNone];
+}
+
+- (instancetype) initWithFrame:(CGRect)frame labelHeight:(CGFloat)labelHeight style:(LRTextFieldStyle)style
 {
     self = [super initWithFrame:frame];
     if ( !self )
@@ -60,8 +72,11 @@
         return nil;
     }
     
+    
     _style = style;
+    _floatingLabelHeight = labelHeight;
     [self updateUI];
+    
     return self;
 }
 
@@ -97,18 +112,17 @@
     [self renderString:text];
 }
 
-- (void) setFont:(UIFont *)font
-{
-    [super setFont:font];
-    [self updatePlaceholder];
-    [self updateHint];
-    [self updateLayer];
-}
-
 - (void) setStyle:(LRTextFieldStyle)style
 {
     _style = style;
     [self updateStyle];
+}
+
+- (void) setFloatingLabelHeight:(CGFloat)floatingLabelHeight
+{
+    _floatingLabelHeight = floatingLabelHeight;
+    [self updatePlaceholder];
+    [self updateHint];
 }
 
 - (void) setFormat:(NSString *)format
@@ -151,61 +165,15 @@
     [self updateHint];
 }
 
-- (void) setInputBackgroundColor:(UIColor *)inputBackgroundColor
-{
-    _inputBackgroundColor = inputBackgroundColor;
-    [self updateLayer];
-}
-
-- (void) setBorderColor:(UIColor *)borderColor
-{
-    _borderColor = borderColor;
-    [self updateLayer];
-}
-
-- (void) setBorderWidth:(CGFloat)borderWidth
-{
-    _borderWidth = borderWidth;
-    [self updateLayer];
-}
-
-- (void) setCornerRadius:(CGFloat)cornerRadius
-{
-    _cornerRadius = cornerRadius;
-    [self updateLayer];
-}
-
-- (void) setValidationBlock:(ValidationBlock)block
-{
-    _validationBlock = block;
-}
-
-#pragma mark - Override method
-
-- (void) prepareForInterfaceBuilder
-{
-    [self updatePlaceholder];
-    [self updateHint];
-    [self updateLayer];
-}
-
-- (CGRect) editingRectForBounds:(CGRect)bounds
-{
-    return [self textRectForBounds:bounds];
-}
+#pragma mark - Override Method
 
 - (CGRect) placeholderRectForBounds:(CGRect)bounds
 {
-    if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation)
+    if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation )
     {
-        return CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
+        return CGRectMake(self.placeholderXInset, - self.placeholderYInset - self.floatingLabelHeight, bounds.size.width - 2 * self.placeholderXInset, self.floatingLabelHeight);
     }
-    return [self textRectForBounds:bounds];
-}
-
-- (CGRect) textRectForBounds:(CGRect)bounds
-{
-    return CGRectOffset(bounds, self.textXInset, self.textYInset + [self getPlaceholderHeight] / 2);
+    return [super textRectForBounds:bounds];
 }
 
 #pragma mark - Update Method
@@ -216,15 +184,12 @@
     
     self.placeholderLabel = [UILabel new];
     self.hintLabel = [UILabel new];
-    self.textLayer = [CALayer layer];
     
     [self updatePlaceholder];
     [self updateHint];
-    [self updateLayer];
     
-    [self addSubview:self.hintLabel];
-    [self.layer addSublayer:self.textLayer];
     [self addSubview:self.placeholderLabel];
+    [self addSubview:self.hintLabel];
     
     [self addTarget:self action:@selector(textFieldEdittingDidBeginInternal:) forControlEvents:UIControlEventEditingDidBegin];
     [self addTarget:self action:@selector(textFieldEdittingDidChangeInternal:) forControlEvents:UIControlEventEditingChanged];
@@ -236,54 +201,44 @@
 - (void) propertyInit
 {
     _placeholderXInset = 0;
-    _placeholderYInset = 0;
-    _textXInset = 6;
-    _textYInset = 0;
+    _placeholderYInset = 2;
     
     _enableAnimation = YES;
     _placeholderText = nil;
     _placeholderTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
     _hintText = nil;
     _hintTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
-    _inputBackgroundColor = [UIColor clearColor];
-    _borderColor = [UIColor colorWithRed:204.0/255.0 green:204.0/255.0 blue:204.0/255.0 alpha:1.0];
-    _borderWidth = 1.0;
-    _cornerRadius = 5.0;
     _temporaryString = [NSString string];
     _validationBlock = nil;
-    self.font = [UIFont systemFontOfSize:14];
-    self.borderStyle = UITextBorderStyleNone;
+    self.clipsToBounds = NO;
+    self.borderStyle = UITextBorderStyleRoundedRect;
 }
 
 - (void) updatePlaceholder
 {
     self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
-    self.placeholderLabel.font = [self defaultFont];
+    self.placeholderLabel.font = self.font;
     self.placeholderLabel.text = self.placeholderText;
-    self.placeholderLabel.textColor = self.placeholderTextColor;
+    self.placeholderLabel.textColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
+    if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation )
+    {
+        self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - 1];
+        self.placeholderLabel.textColor = self.placeholderTextColor;
+    }
 }
 
 - (void) updateHint
 {
-    self.hintLabel.frame = CGRectMake(self.placeholderXInset, self.placeholderYInset, self.bounds.size.width, [self getPlaceholderHeight]);
-    self.hintLabel.font = [self defaultFont];
+    self.hintLabel.frame = [self placeholderRectForBounds:self.bounds];
+    self.hintLabel.font = [UIFont systemFontOfSize:self.floatingLabelHeight - 1];
     self.hintLabel.text = self.hintText;
     self.hintLabel.textColor = self.hintTextColor;
     self.hintLabel.textAlignment = NSTextAlignmentRight;
     self.hintLabel.alpha = 0.0f;
-    if ( self.text && self.text.length > 0 )
+    if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation )
     {
         self.hintLabel.alpha = 1.0f;
     }
-}
-
-- (void) updateLayer
-{
-    self.textLayer.frame = CGRectMake(self.bounds.origin.x, self.bounds.origin.y + [self getPlaceholderHeight], self.bounds.size.width, self.bounds.size.height - [self getPlaceholderHeight]);
-    self.textLayer.backgroundColor = self.inputBackgroundColor.CGColor;
-    self.textLayer.borderColor = self.borderColor.CGColor;
-    self.textLayer.borderWidth = self.borderWidth;
-    self.textLayer.cornerRadius = self.cornerRadius;
 }
 
 - (void) updateStyle
@@ -339,26 +294,6 @@
 }
 
 #pragma mark - Private Method
-
-- (UIFont *) defaultFont
-{
-    UIFont *font = nil;
-    
-    if ( self.attributedPlaceholder && self.attributedPlaceholder.length > 0 )
-    {
-        font = [self.attributedPlaceholder attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
-    }
-    else if ( self.attributedText && self.attributedText.length > 0 )
-    {
-        font = [self.attributedText attribute:NSFontAttributeName atIndex:0 effectiveRange:NULL];
-    }
-    else
-    {
-        font = self.font;
-    }
-    
-    return [UIFont fontWithName:font.fontName size:roundf(font.pointSize * fontScale)];
-}
 
 - (void) sanitizeStrings
 {
@@ -417,14 +352,28 @@
 
 - (void) runDidBeginAnimation
 {
-    [self updateHint];
-    [self updateLayer];
-    [self showLabel];
+    void (^showBlock)() = ^{
+        [self updatePlaceholder];
+        [self updateHint];
+    };
+    [UIView animateWithDuration:0.1f
+                          delay:0.0f
+                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+                     animations:showBlock
+                     completion:nil];
 }
 
 - (void) runDidEndAnimation
 {
-    [self hideLabel];
+    void (^hideBlock)() = ^{
+        [self updatePlaceholder];
+        self.hintLabel.alpha = 0.0f;
+    };
+    [UIView animateWithDuration:0.1f
+                          delay:0.0f
+                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+                     animations:hideBlock
+                     completion:nil];
     if ( self.validationBlock && self.text.length > 0 )
     {
         [self validateText];
@@ -441,45 +390,16 @@
     [self sanitizeStrings];
 }
 
-- (void) showLabel
-{
-    void (^showBlock)() = ^{
-        [self updatePlaceholder];
-        if ( _enableAnimation )
-        {
-            self.hintLabel.alpha = 1.0f;
-        }
-    };
-    [UIView animateWithDuration:0.1f
-                          delay:0.0f
-                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
-                     animations:showBlock
-                     completion:nil];
-}
-
-- (void) hideLabel
-{
-    void (^hideBlock)() = ^{
-        [self updatePlaceholder];
-        self.hintLabel.alpha = 0.0f;
-    };
-    [UIView animateWithDuration:0.1f
-                          delay:0.0f
-                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
-                     animations:hideBlock
-                     completion:nil];
-}
-
 #pragma mark - Validation
 
 - (void) validateText
 {
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-    indicator.frame = CGRectMake(self.textLayer.frame.size.width - self.textLayer.frame.size.height,
+    indicator.frame = CGRectMake(self.frame.size.width - self.frame.size.height,
                                  0,
-                                 self.textLayer.frame.size.height,
-                                 self.textLayer.frame.size.height);
-    [self.textLayer addSublayer:indicator.layer];
+                                 self.frame.size.height,
+                                 self.frame.size.height);
+    [self.layer addSublayer:indicator.layer];
     [indicator startAnimating];
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -506,21 +426,22 @@
     {
         self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_INDICATOR_YES] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_INDICATOR_YES] : @"";
         self.hintLabel.textColor = [UIColor greenColor];
-        self.textLayer.borderColor = [UIColor greenColor].CGColor;
         self.hintLabel.alpha = 1.0f;
+        if ( self.borderStyle != UITextBorderStyleNone )
+        {
+            self.layer.borderColor = [UIColor greenColor].CGColor;
+        }
     }
     else if ( [validationInfo objectForKey:VALIDATION_INDICATOR_NO] )
     {
         self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_INDICATOR_NO] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_INDICATOR_NO] : @"";
         self.hintLabel.textColor = [UIColor redColor];
-        self.textLayer.borderColor = [UIColor redColor].CGColor;
         self.hintLabel.alpha = 1.0f;
+        if ( self.borderStyle != UITextBorderStyleNone )
+        {
+            self.layer.borderColor = [UIColor redColor].CGColor;
+        }
     }
-}
-
-- (CGFloat) getPlaceholderHeight
-{
-    return self.placeholderYInset + [self defaultFont].lineHeight;
 }
 
 @end
