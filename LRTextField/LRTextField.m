@@ -9,6 +9,7 @@
 #import "LRTextField.h"
 
 #define fontScale 0.7f
+#define fontOffset 1
 
 @interface LRTextField ()
 
@@ -53,7 +54,7 @@
     }
     
     _style = LRTextFieldStyleNone;
-    _floatingLabelHeight = self.font.pointSize * 0.7 + 1;
+    _floatingLabelHeight = self.font.pointSize * fontScale + fontOffset;
     [self updateUI];
     
     return self;
@@ -222,7 +223,7 @@
     self.placeholderLabel.textColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
     if ( self.isFirstResponder || self.text.length > 0 || !self.enableAnimation )
     {
-        self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - 1];
+        self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - fontOffset];
         self.placeholderLabel.textColor = self.placeholderTextColor;
     }
 }
@@ -230,7 +231,7 @@
 - (void) updateHint
 {
     self.hintLabel.frame = [self placeholderRectForBounds:self.bounds];
-    self.hintLabel.font = [UIFont systemFontOfSize:self.floatingLabelHeight - 1];
+    self.hintLabel.font = [UIFont systemFontOfSize:self.floatingLabelHeight - fontOffset];
     self.hintLabel.text = self.hintText;
     self.hintLabel.textColor = self.hintTextColor;
     self.hintLabel.textAlignment = NSTextAlignmentRight;
