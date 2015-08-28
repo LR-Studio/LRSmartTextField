@@ -22,7 +22,6 @@
     textField.placeholder = @"plAceholDeR";
     textField.hintText = @"hiNt";
     textField.format = @"(###)-##)-";
-    textField.placeholderTextColor = [UIColor blueColor];
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
         [NSThread sleepForTimeInterval:1.0];
         return @{ VALIDATION_INDICATOR_YES : @"good" };
