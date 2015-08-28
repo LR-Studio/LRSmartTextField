@@ -61,7 +61,6 @@
     _style = LRTextFieldStyleNone;
     _floatingLabelHeight = self.font.pointSize * fontScale + fontOffset;
     [self updateUI];
-    
     return self;
 }
 
@@ -234,6 +233,7 @@
     
     _validationGreen = [UIColor colorWithRed:35.0/255.0 green:199.0/255.0 blue:90.0/255.0 alpha:1.0];
     _validationRed = [UIColor colorWithRed:225.0/255.0 green:51.0/255.0 blue:40.0/255.0 alpha:1.0];
+    [self initLayer];
 }
 
 - (void) updatePlaceholder
@@ -243,8 +243,12 @@
     self.placeholderLabel.text = self.placeholderText;
     if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
     {
-        self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - fontOffset];
+        //self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - fontOffset];
+        self.placeholderLabel.transform = CGAffineTransformMakeScale(0.7, 0.7);
         //self.placeholderLabel.textColor = self.placeholderTextColor;
+    }else
+    {
+        self.placeholderLabel.transform = CGAffineTransformMakeScale(1.0, 1.0);
     }
     if (self.isEditing)
     {
@@ -381,10 +385,10 @@
 
 - (void) runDidBeginAnimation
 {
+    [self showBorderWithColor:[UIColor clearColor]];
     void (^showBlock)() = ^{
         [self updatePlaceholder];
         [self updateHint];
-        self.layer.borderColor = [UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0].CGColor;
     };
     [UIView animateWithDuration:0.3f
                           delay:0.0f
@@ -445,9 +449,17 @@
 
 - (void) runValidationViewAnimation:(NSDictionary *)validationInfo
 {
+    
     [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
         [self layoutValidationView:validationInfo];
     } completion:nil];
+    if ( [validationInfo objectForKey:VALIDATION_INDICATOR_YES] )
+    {
+        [self showBorderWithColor:_validationGreen];
+    }else if ( [validationInfo objectForKey:VALIDATION_INDICATOR_NO] )
+    {
+        [self showBorderWithColor:_validationRed];
+    }
 }
 
 - (void) layoutValidationView:(NSDictionary *)validationInfo
@@ -458,21 +470,29 @@
         self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_INDICATOR_YES] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_INDICATOR_YES] : @"";
         self.hintLabel.textColor = _validationGreen;
         self.hintLabel.alpha = 1.0f;
-        
-        self.layer.borderWidth = 1.0;
-        self.layer.cornerRadius = 6.0;
-        self.layer.borderColor = _validationGreen.CGColor;
     }
     else if ( [validationInfo objectForKey:VALIDATION_INDICATOR_NO] )
     {
         self.hintLabel.text = [[validationInfo objectForKey:VALIDATION_INDICATOR_NO] isKindOfClass:[NSString class]] ? [validationInfo objectForKey:VALIDATION_INDICATOR_NO] : @"";
         self.hintLabel.textColor = _validationRed;
         self.hintLabel.alpha = 1.0f;
-        
-        self.layer.borderWidth = 1.0;
-        self.layer.cornerRadius = 6.0;
-        self.layer.borderColor = _validationRed.CGColor;
     }
+}
+
+- (void) initLayer
+{
+    self.layer.borderWidth = 1.0f;
+    self.layer.cornerRadius = 6.0f;
+    self.layer.borderColor = [UIColor clearColor].CGColor;
+}
+
+- (void) showBorderWithColor:(UIColor*)color
+{
+    CABasicAnimation *showColorAnimation = [CABasicAnimation animationWithKeyPath:@"borderColor"];
+    showColorAnimation.toValue = (__bridge id)(color.CGColor);
+    showColorAnimation.duration = 5.0;
+    [self.layer addAnimation:showColorAnimation forKey:@"borderColor"];
+    self.layer.borderColor = color.CGColor;
 }
 
 @end

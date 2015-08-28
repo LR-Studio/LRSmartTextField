@@ -19,8 +19,8 @@
     [super viewDidLoad];
     
     LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 30) labelHeight:10 style:LRTextFieldStyleNone];
-    textField.placeholder = @"123456";
-    textField.hintText = @"hint";
+    textField.placeholder = @"plAceholDeR";
+    textField.hintText = @"hiNt";
     textField.format = @"(###)-##)-";
     textField.placeholderTextColor = [UIColor blueColor];
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
@@ -42,6 +42,9 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+- (IBAction)hideKeyboardPressed:(id)sender {
+    [self.view endEditing:YES];
 }
 
 @end
