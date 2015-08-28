@@ -63,10 +63,16 @@ IB_DESIGNABLE
 @property (nonatomic) IBInspectable BOOL enableAnimation;
 
 /**
- * Text color to be applied to floating placeholder text.
- * Default is [UIColor grayColor].
+ * Text color to be applied to floating placeholder text when editing.
+ * Default is tint color.
  */
-@property (nonatomic, strong) IBInspectable UIColor *placeholderTextColor;
+@property (nonatomic, strong) IBInspectable UIColor *placeholderActiveColor;
+
+/**
+ * Text color to be applied to floating placeholder text when not editing.
+ * Default is 70% gray.
+ */
+@property (nonatomic, strong) IBInspectable UIColor *placeholderInactiveColor;
 
 /**
  * Text to be displayed in the floating hint label.

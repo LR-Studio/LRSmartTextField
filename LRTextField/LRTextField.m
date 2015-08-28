@@ -157,9 +157,15 @@
     [self updatePlaceholder];
 }
 
-- (void) setPlaceholderTextColor:(UIColor *)placeholderTextColor
+- (void) setPlaceholderActiveColor:(UIColor *)placeholderActiveColor
 {
-    _placeholderTextColor = placeholderTextColor;
+    _placeholderActiveColor = placeholderActiveColor;
+    [self updatePlaceholder];
+}
+
+- (void) setPlaceholderInactiveColor:(UIColor *)placeholderInactiveColor
+{
+    _placeholderInactiveColor = placeholderInactiveColor;
     [self updatePlaceholder];
 }
 
@@ -215,7 +221,8 @@
     
     _enableAnimation = YES;
     self.placeholder = self.placeholder;
-    _placeholderTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
+    _placeholderInactiveColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
+    _placeholderActiveColor = self.tintColor;
     _hintText = nil;
     _hintTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
     _temporaryString = [NSString string];
@@ -244,11 +251,11 @@
     
     if (self.isEditing)
     {
-        self.placeholderLabel.textColor = self.placeholderTextColor;
+        self.placeholderLabel.textColor = self.placeholderActiveColor;
     }
     else
     {
-        self.placeholderLabel.textColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
+        self.placeholderLabel.textColor = self.placeholderInactiveColor;
     }
 }
 
@@ -382,7 +389,7 @@
     if ( self.text.length > 0 )
     {
         void (^showBlock)() = ^{
-            self.placeholderLabel.textColor = self.placeholderTextColor;
+            self.placeholderLabel.textColor = self.placeholderActiveColor;
             [self updateHint];
         };
         [UIView transitionWithView:self.placeholderLabel
@@ -424,7 +431,7 @@
         }
         
         void (^hideBlock)() = ^{
-            self.placeholderLabel.textColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
+            self.placeholderLabel.textColor = self.placeholderInactiveColor;
         };
         [UIView transitionWithView:self.placeholderLabel
                           duration:0.3f
