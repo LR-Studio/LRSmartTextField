@@ -18,7 +18,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 30) labelHeight:10 style:LRTextFieldStyleNone];
+    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 100, 30) labelHeight:15 style:LRTextFieldStyleNone];
     textField.placeholder = @"plAceholDeR";
     textField.hintText = @"hiNt";
     textField.format = @"(###)-##)-";

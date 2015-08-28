@@ -8,9 +8,6 @@
 
 #import "LRTextField.h"
 
-#define fontScale 0.7f
-#define fontOffset 1
-
 @interface LRTextField ()
 
 @property (nonatomic) UILabel *placeholderLabel;
@@ -45,7 +42,7 @@
     }
     
     _style = LRTextFieldStyleNone;
-    _floatingLabelHeight = self.font.pointSize * fontScale + fontOffset;
+    _floatingLabelHeight = self.frame.size.height / 2;
     [self updateUI];
     return self;
 }
@@ -59,7 +56,7 @@
     }
     
     _style = LRTextFieldStyleNone;
-    _floatingLabelHeight = self.font.pointSize * fontScale + fontOffset;
+    _floatingLabelHeight = frame.size.height / 2;
     [self updateUI];
     return self;
 }
@@ -120,7 +117,8 @@
 - (void) setFont:(UIFont *)font
 {
     [super setFont:font];
-    self.floatingLabelHeight = font.pointSize * fontScale + fontOffset;
+    [self updatePlaceholder];
+    [self updateHint];
 }
 
 - (void) setStyle:(LRTextFieldStyle)style
@@ -213,7 +211,7 @@
 - (void) propertyInit
 {
     _placeholderXInset = 0;
-    _placeholderYInset = 2;
+    _placeholderYInset = 1;
     
     _enableAnimation = YES;
     self.placeholder = self.placeholder;
@@ -236,7 +234,7 @@
     self.placeholderLabel.text = self.placeholderText;
     if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
     {
-        self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - fontOffset];
+        self.placeholderLabel.font = [self calculateFont];
         self.placeholderLabel.transform = CGAffineTransformMakeScale(0.7, 0.7);
     }else
     {
@@ -257,7 +255,7 @@
 - (void) updateHint
 {
     self.hintLabel.frame = [self placeholderRectForBounds:self.bounds];
-    self.hintLabel.font = [UIFont systemFontOfSize:self.floatingLabelHeight - fontOffset];
+    self.hintLabel.font = [self calculateFont];
     self.hintLabel.text = self.hintText;
     self.hintLabel.textColor = self.hintTextColor;
     self.hintLabel.textAlignment = NSTextAlignmentRight;
@@ -467,6 +465,20 @@
     }
     
     [self sanitizeStrings];
+}
+
+- (UIFont *) calculateFont
+{
+    int fontSize = 5;
+    CGFloat fontHeight = [UIFont fontWithName:self.font.fontName size:fontSize].lineHeight;
+    
+    while ( fontHeight < self.floatingLabelHeight )
+    {
+        fontSize += 1;
+        fontHeight = [UIFont fontWithName:self.font.fontName size:fontSize].lineHeight;
+    }
+    
+    return [UIFont fontWithName:self.font.fontName size:fontSize - 1];
 }
 
 #pragma mark - Validation
