@@ -489,8 +489,9 @@
 - (void) showBorderWithColor:(UIColor*)color
 {
     CABasicAnimation *showColorAnimation = [CABasicAnimation animationWithKeyPath:@"borderColor"];
+    showColorAnimation.fromValue = (__bridge id)(self.layer.borderColor);
     showColorAnimation.toValue = (__bridge id)(color.CGColor);
-    showColorAnimation.duration = 5.0;
+    showColorAnimation.duration = 0.3;
     [self.layer addAnimation:showColorAnimation forKey:@"borderColor"];
     self.layer.borderColor = color.CGColor;
 }
