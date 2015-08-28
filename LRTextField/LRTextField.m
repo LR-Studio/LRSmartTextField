@@ -13,7 +13,6 @@
 
 @interface LRTextField ()
 
-@property (nonatomic, copy) NSString *placeholderText;
 @property (nonatomic) UILabel *placeholderLabel;
 @property (nonatomic) UILabel *hintLabel;
 
@@ -21,6 +20,7 @@
 @property (nonatomic, assign) CGFloat placeholderYInset;
 @property (nonatomic, strong) ValidationBlock validationBlock;
 @property (nonatomic, strong) NSString *temporaryString;
+@property (nonatomic, copy) NSString *placeholderText;
 
 @property (nonatomic, strong) UIColor *validationGreen;
 @property (nonatomic, strong) UIColor *validationRed;
@@ -152,12 +152,6 @@
     [self updatePlaceholder];
 }
 
-//- (void) setPlaceholderText:(NSString *)placeholderText
-//{
-//    _placeholderText = placeholderText;
-//    [self updatePlaceholder];
-//}
-
 - (void) setPlaceholder:(NSString *)placeholder
 {
     [super setPlaceholder:nil];
@@ -238,7 +232,6 @@
 
 - (void) updatePlaceholder
 {
-    self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
     self.placeholderLabel.font = self.font;
     self.placeholderLabel.text = self.placeholderText;
     if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
@@ -249,6 +242,7 @@
     {
         self.placeholderLabel.transform = CGAffineTransformMakeScale(1.0, 1.0);
     }
+    self.placeholderLabel.frame = [self placeholderRectForBounds:self.bounds];
     
     if (self.isEditing)
     {
@@ -410,14 +404,27 @@
                             options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
                          animations:showBlock
                          completion:nil];
+        
+//        void (^showHintBlock)() = ^{
+//            [self updateHint];
+//        };
+//        [UIView transitionWithView:self.hintLabel
+//                          duration:0.3f
+//                           options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve
+//                        animations:showHintBlock
+//                        completion:nil];
     }
-    
 }
 
 - (void) runDidEndAnimation
 {
     if ( self.text.length > 0 )
     {
+        if ( self.validationBlock )
+        {
+            [self validateText];
+        }
+        
         void (^hideBlock)() = ^{
             self.placeholderLabel.textColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
         };
@@ -426,23 +433,29 @@
                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve
                         animations:hideBlock
                         completion:nil];
-        
-        if ( self.validationBlock )
-        {
-            [self validateText];
-        }
     }
     else
     {
         void (^hideBlock)() = ^{
             [self updatePlaceholder];
-            self.hintLabel.alpha = 0.0f;
+            [self updateHint];
         };
         [UIView animateWithDuration:0.3f
                               delay:0.0f
                             options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
                          animations:hideBlock
                          completion:nil];
+        
+//        void (^hideHintBlock)() = ^{
+////            [self updateHint];
+//            self.hintLabel.text = self.hintText;
+//            self.hintLabel.textColor = self.hintTextColor;
+//        };
+//        [UIView transitionWithView:self.hintLabel
+//                          duration:0.3f
+//                           options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve
+//                        animations:hideHintBlock
+//                        completion:nil];
     }
 }
 
@@ -481,10 +494,10 @@
 
 - (void) runValidationViewAnimation:(NSDictionary *)validationInfo
 {
-    
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+    [UIView transitionWithView:self.hintLabel duration:0.3f options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve animations:^{
         [self layoutValidationView:validationInfo];
     } completion:nil];
+    
     if ( [validationInfo objectForKey:VALIDATION_INDICATOR_YES] )
     {
         [self showBorderWithColor:_validationGreen];
