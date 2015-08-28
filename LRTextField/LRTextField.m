@@ -243,13 +243,13 @@
     self.placeholderLabel.text = self.placeholderText;
     if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
     {
-        //self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - fontOffset];
+        self.placeholderLabel.font = [UIFont fontWithDescriptor:[self.font fontDescriptor] size:self.floatingLabelHeight - fontOffset];
         self.placeholderLabel.transform = CGAffineTransformMakeScale(0.7, 0.7);
-        //self.placeholderLabel.textColor = self.placeholderTextColor;
     }else
     {
         self.placeholderLabel.transform = CGAffineTransformMakeScale(1.0, 1.0);
     }
+    
     if (self.isEditing)
     {
         self.placeholderLabel.textColor = self.placeholderTextColor;
@@ -386,31 +386,63 @@
 - (void) runDidBeginAnimation
 {
     [self showBorderWithColor:[UIColor clearColor]];
-    void (^showBlock)() = ^{
-        [self updatePlaceholder];
-        [self updateHint];
-    };
-    [UIView animateWithDuration:0.3f
-                          delay:0.0f
-                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
-                     animations:showBlock
-                     completion:nil];
+    
+    if ( self.text.length > 0 )
+    {
+        void (^showBlock)() = ^{
+            self.placeholderLabel.textColor = self.placeholderTextColor;
+            [self updateHint];
+        };
+        [UIView transitionWithView:self.placeholderLabel
+                          duration:0.3f
+                           options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve
+                        animations:showBlock
+                        completion:nil];
+    }
+    else
+    {
+        void (^showBlock)() = ^{
+            [self updatePlaceholder];
+            [self updateHint];
+        };
+        [UIView animateWithDuration:0.3f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+                         animations:showBlock
+                         completion:nil];
+    }
+    
 }
 
 - (void) runDidEndAnimation
 {
-    void (^hideBlock)() = ^{
-        [self updatePlaceholder];
-        self.hintLabel.alpha = 0.0f;
-    };
-    [UIView animateWithDuration:0.3f
-                          delay:0.0f
-                        options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
-                     animations:hideBlock
-                     completion:nil];
-    if ( self.validationBlock && self.text.length > 0 )
+    if ( self.text.length > 0 )
     {
-        [self validateText];
+        void (^hideBlock)() = ^{
+            self.placeholderLabel.textColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
+        };
+        [UIView transitionWithView:self.placeholderLabel
+                          duration:0.3f
+                           options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve
+                        animations:hideBlock
+                        completion:nil];
+        
+        if ( self.validationBlock )
+        {
+            [self validateText];
+        }
+    }
+    else
+    {
+        void (^hideBlock)() = ^{
+            [self updatePlaceholder];
+            self.hintLabel.alpha = 0.0f;
+        };
+        [UIView animateWithDuration:0.3f
+                              delay:0.0f
+                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+                         animations:hideBlock
+                         completion:nil];
     }
 }
 
