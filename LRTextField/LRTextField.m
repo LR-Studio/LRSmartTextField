@@ -235,7 +235,8 @@
     if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
     {
         self.placeholderLabel.font = [self calculateFont];
-        self.placeholderLabel.transform = CGAffineTransformMakeScale(0.7, 0.7);
+        CGFloat scale = self.floatingLabelHeight / [self placeholderRectForBounds:self.bounds].size.height;
+        self.placeholderLabel.transform = CGAffineTransformMakeScale(scale, scale);
     }else
     {
         self.placeholderLabel.transform = CGAffineTransformMakeScale(1.0, 1.0);
@@ -254,7 +255,7 @@
 
 - (void) updateHint
 {
-    self.hintLabel.frame = [self placeholderRectForBounds:self.bounds];
+    self.hintLabel.frame = CGRectMake(self.placeholderXInset, - self.placeholderYInset - self.floatingLabelHeight, self.bounds.size.width - 2 * self.placeholderXInset, self.floatingLabelHeight);
     self.hintLabel.font = [self calculateFont];
     self.hintLabel.text = self.hintText;
     self.hintLabel.textColor = self.hintTextColor;
@@ -377,10 +378,11 @@
 
 - (void) runDidBeginAnimation
 {
-    [self showBorderWithColor:[UIColor clearColor]];
+    
     
     if ( self.text.length > 0 )
     {
+        [self showBorderWithColor:[UIColor clearColor]];
         void (^showBlock)() = ^{
             self.placeholderLabel.textColor = self.placeholderTextColor;
             [self updateHint];
@@ -393,24 +395,25 @@
     }
     else
     {
-        void (^showBlock)() = ^{
+//        void (^showBlock)() = ^{
+//            [self updatePlaceholder];
+//            [self updateHint];
+//        };
+//        [UIView animateWithDuration:3.0f
+//                              delay:0.0f
+//                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+//                         animations:showBlock
+//                         completion:nil];
+        
+        void (^showHintBlock)() = ^{
             [self updatePlaceholder];
             [self updateHint];
         };
-        [UIView animateWithDuration:0.3f
-                              delay:0.0f
-                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
-                         animations:showBlock
-                         completion:nil];
-        
-//        void (^showHintBlock)() = ^{
-//            [self updateHint];
-//        };
-//        [UIView transitionWithView:self.hintLabel
-//                          duration:0.3f
-//                           options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve
-//                        animations:showHintBlock
-//                        completion:nil];
+        [UIView transitionWithView:self.placeholderLabel
+                          duration:0.3f
+                           options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve
+                        animations:showHintBlock
+                        completion:nil];
     }
 }
 
@@ -434,26 +437,25 @@
     }
     else
     {
-        void (^hideBlock)() = ^{
+//        void (^hideBlock)() = ^{
+//            [self updatePlaceholder];
+//            [self updateHint];
+//        };
+//        [UIView animateWithDuration:3.0f
+//                              delay:0.0f
+//                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
+//                         animations:hideBlock
+//                         completion:nil];
+        
+        void (^hideHintBlock)() = ^{
             [self updatePlaceholder];
             [self updateHint];
         };
-        [UIView animateWithDuration:0.3f
-                              delay:0.0f
-                            options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionCurveEaseIn
-                         animations:hideBlock
-                         completion:nil];
-        
-//        void (^hideHintBlock)() = ^{
-////            [self updateHint];
-//            self.hintLabel.text = self.hintText;
-//            self.hintLabel.textColor = self.hintTextColor;
-//        };
-//        [UIView transitionWithView:self.hintLabel
-//                          duration:0.3f
-//                           options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve
-//                        animations:hideHintBlock
-//                        completion:nil];
+        [UIView transitionWithView:self.placeholderLabel
+                          duration:0.3f
+                           options:UIViewAnimationOptionBeginFromCurrentState | UIViewAnimationOptionTransitionCrossDissolve
+                        animations:hideHintBlock
+                        completion:nil];
     }
 }
 
