@@ -25,15 +25,23 @@
                                     <action selector="hideKeyboardPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="9Sh-p0-Vb0"/>
                                 </connections>
                             </button>
-                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="saving" borderStyle="roundedRect" placeholder="AccountgPL" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MPP-6P-BxW" customClass="LRTextField">
-                                <rect key="frame" x="66" y="189" width="149" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="AccountgPL" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="MPP-6P-BxW" customClass="LRTextField">
+                                <rect key="frame" x="26" y="193" width="149" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="string" keyPath="hintText" value="hhhhint"/>
                                     <userDefinedRuntimeAttribute type="number" keyPath="floatingLabelHeight">
-                                        <real key="value" value="24"/>
+                                        <real key="value" value="13"/>
                                     </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="placeholderActiveColor">
+                                        <color key="value" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="color" keyPath="placeholderInactiveColor">
+                                        <color key="value" red="0.17254901959999999" green="0.70588235290000001" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
+                                    </userDefinedRuntimeAttribute>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="format" value="(###)"/>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="enableAnimation" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                             </textField>
                         </subviews>
