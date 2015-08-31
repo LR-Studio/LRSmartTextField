@@ -18,15 +18,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 200, 50) labelHeight:15 style:LRTextFieldStyleNone];
-    textField.placeholder = @"plAceholDeR";
-    textField.hintText = @"hiNt";
-    textField.format = @"(###)-##)-";
+    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 200, 50) labelHeight:15 style:LRTextFieldStyleEmail];
+//    textField.placeholder = @"plAceholDeR";
+//    textField.hintText = @"hiNt";
+//    textField.format = @"(###)-##)-";
     [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
-        [NSThread sleepForTimeInterval:1.0];
+//        [NSThread sleepForTimeInterval:1.0];
         return @{ VALIDATION_INDICATOR_YES : @"good" };
     }];
-    textField.enableAnimation = NO;
+//    textField.enableAnimation = NO;
     [self.view addSubview:textField];
     
     // Do any additional setup after loading the view, typically from a nib.
