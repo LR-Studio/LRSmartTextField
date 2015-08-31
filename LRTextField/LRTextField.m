@@ -282,7 +282,7 @@
     switch ( self.style )
     {
         case LRTextFieldStyleEmail:
-            self.placeholderText = @"Email";
+            self.placeholder = @"Email";
             self.format = nil;
             _validationBlock = ^NSDictionary *(LRTextField *textField, NSString *text) {
                 NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";
@@ -295,13 +295,13 @@
             };
             break;
         case LRTextFieldStylePhone:
-            self.placeholderText = @"Phone";
+            self.placeholder = @"Phone";
             self.keyboardType = UIKeyboardTypePhonePad;
             self.format = @"###-###-####";
             _validationBlock = nil;
             break;
         case LRTextFieldStylePassword:
-            self.placeholderText = @"Password";
+            self.placeholder = @"Password";
             self.secureTextEntry = YES;
             self.format = nil;
             _validationBlock = nil;
@@ -522,11 +522,6 @@
 
 - (void) initLayer
 {
-    if ( !self.validationBlock )
-    {
-        return;
-    }
-    
     switch ( self.borderStyle )
     {
         case UITextBorderStyleRoundedRect:

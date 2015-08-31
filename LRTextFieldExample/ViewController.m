@@ -18,16 +18,27 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    LRTextField *textField = [[LRTextField alloc] initWithFrame:CGRectMake(50, 50, 200, 50) labelHeight:15 style:LRTextFieldStyleEmail];
-//    textField.placeholder = @"plAceholDeR";
-//    textField.hintText = @"hiNt";
-//    textField.format = @"(###)-##)-";
-    [textField setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
-//        [NSThread sleepForTimeInterval:1.0];
-        return @{ VALIDATION_INDICATOR_YES : @"good" };
+    LRTextField *textFieldEmail = [[LRTextField alloc] initWithFrame:CGRectMake(20, 70, 260, 30) labelHeight:15 style:LRTextFieldStyleEmail];
+    [self.view addSubview:textFieldEmail];
+    
+    LRTextField *textFieldPhone = [[LRTextField alloc] initWithFrame:CGRectMake(20, 150, 260, 30) labelHeight:15];
+    textFieldPhone.placeholder = @"Phone";
+    textFieldPhone.hintText = @"(Optional)";
+    textFieldPhone.format = @"(###)###-####"; // set format for segment input string
+    textFieldPhone.keyboardType = UIKeyboardTypePhonePad;
+    [self.view addSubview:textFieldPhone];
+    
+    LRTextField *textFieldValidation = [[LRTextField alloc] initWithFrame:CGRectMake(20, 230, 260, 30) labelHeight:15];
+    textFieldValidation.placeholder = @"Validation Demo";
+    textFieldValidation.hintText = @"Enter \"abc\"";
+    [textFieldValidation setValidationBlock:^NSDictionary *(LRTextField *textField, NSString *text) {
+        [NSThread sleepForTimeInterval:1.0];
+        if ([text isEqualToString:@"abc"]) {
+            return @{ VALIDATION_INDICATOR_YES : @"Correct" };
+        }
+        return @{ VALIDATION_INDICATOR_NO : @"Error" };
     }];
-//    textField.enableAnimation = NO;
-    [self.view addSubview:textField];
+    [self.view addSubview:textFieldValidation];
     
     // Do any additional setup after loading the view, typically from a nib.
 }
@@ -36,7 +47,8 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (IBAction)hideKeyboardPressed:(id)sender {
+- (IBAction)hideKeyboardPressed:(id)sender
+{
     [self.view endEditing:YES];
 }
 
