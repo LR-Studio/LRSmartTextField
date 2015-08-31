@@ -175,7 +175,7 @@
 
 - (void) setHintTextColor:(UIColor *)hintTextColor
 {
-    self.hintLabel.textColor = hintTextColor;
+    _hintTextColor = hintTextColor;
     [self updateHint];
 }
 
