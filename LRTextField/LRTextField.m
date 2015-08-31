@@ -17,7 +17,7 @@
 @property (nonatomic, assign) CGFloat placeholderYInset;
 @property (nonatomic, strong) ValidationBlock validationBlock;
 @property (nonatomic, strong) NSString *temporaryString;
-@property (nonatomic, copy) NSString *placeholderLabelText;
+@property (nonatomic, copy) NSString *placeholderText;
 
 @property (nonatomic, strong) UIColor *validationYesColor;
 @property (nonatomic, strong) UIColor *validationNoColor;
@@ -50,6 +50,7 @@
     {
         _style = style;
         _floatingLabelHeight = labelHeight;
+        self.borderStyle = UITextBorderStyleRoundedRect;
         [self updateUI];
     }
     return self;
@@ -116,6 +117,12 @@
     [self updateStyle];
 }
 
+- (void) setBorderStyle:(UITextBorderStyle)borderStyle
+{
+    [super setBorderStyle:borderStyle];
+    [self initLayer];
+}
+
 - (void) setFloatingLabelHeight:(CGFloat)floatingLabelHeight
 {
     _floatingLabelHeight = floatingLabelHeight;
@@ -144,7 +151,7 @@
 - (void) setPlaceholder:(NSString *)placeholder
 {
     [super setPlaceholder:nil];
-    self.placeholderLabel.text = placeholder;
+    _placeholderText = placeholder;
     [self updatePlaceholder];
 }
 
@@ -162,7 +169,7 @@
 
 - (void) setHintText:(NSString *)hintText
 {
-    self.hintLabel.text = hintText;
+    _hintText = hintText;
     [self updateHint];
 }
 
@@ -170,6 +177,12 @@
 {
     self.hintLabel.textColor = hintTextColor;
     [self updateHint];
+}
+
+- (void) setValidationBlock:(ValidationBlock)block
+{
+    _validationBlock = block;
+    [self initLayer];
 }
 
 #pragma mark - Update Method
@@ -222,6 +235,7 @@
 
 - (void) updatePlaceholder
 {
+    self.placeholderLabel.text = self.placeholderText;
     //Label shown over the textfield
     if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
     {
@@ -235,7 +249,7 @@
         self.placeholderLabel.frame = [super textRectForBounds:self.bounds];
     }
     
-    if (self.isEditing)
+    if ( self.isEditing )
     {
         self.placeholderLabel.textColor = self.placeholderActiveColor;
     }
@@ -247,14 +261,19 @@
 
 - (void) updateHint
 {
+    self.hintLabel.text = self.hintText;
+    self.hintLabel.textColor = self.hintTextColor;
     CGFloat scale = _floatingLabelHeight / self.font.lineHeight;
     self.hintLabel.transform = CGAffineTransformMakeScale(scale, scale);
     self.hintLabel.frame = [self floatingLabelUpperFrame];
     self.hintLabel.textAlignment = NSTextAlignmentRight;
-    self.hintLabel.alpha = 0.0f;
     if ( self.isEditing || self.text.length > 0 || !self.enableAnimation )
     {
         self.hintLabel.alpha = 1.0f;
+    }
+    else
+    {
+        self.hintLabel.alpha = 0.0f;
     }
 }
 
@@ -263,7 +282,7 @@
     switch ( self.style )
     {
         case LRTextFieldStyleEmail:
-            self.placeholderLabelText = @"Email";
+            self.placeholderText = @"Email";
             self.format = nil;
             _validationBlock = ^NSDictionary *(LRTextField *textField, NSString *text) {
                 NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";
@@ -276,13 +295,13 @@
             };
             break;
         case LRTextFieldStylePhone:
-            self.placeholderLabelText = @"Phone";
+            self.placeholderText = @"Phone";
             self.keyboardType = UIKeyboardTypePhonePad;
             self.format = @"###-###-####";
             _validationBlock = nil;
             break;
         case LRTextFieldStylePassword:
-            self.placeholderLabelText = @"Password";
+            self.placeholderText = @"Password";
             self.secureTextEntry = YES;
             self.format = nil;
             _validationBlock = nil;
@@ -372,15 +391,28 @@
 {
     if ( self.text.length > 0 )
     {
-        void (^showBlock)() = ^{
+        void (^showPlaceholderBlock)() = ^{
             self.placeholderLabel.textColor = self.placeholderActiveColor;
+        };
+        
+        void (^showHintBlock)() = ^{
+            self.hintLabel.text = self.hintText;
+            self.hintLabel.textColor = self.hintTextColor;
             self.hintLabel.alpha = 1.0f;
         };
+        
         [UIView transitionWithView:self.placeholderLabel
                           duration:0.3f
                            options:UIViewAnimationOptionBeginFromCurrentState
                                  | UIViewAnimationOptionTransitionCrossDissolve
-                        animations:showBlock
+                        animations:showPlaceholderBlock
+                        completion:nil];
+        
+        [UIView transitionWithView:self.hintLabel
+                          duration:0.3f
+                           options:UIViewAnimationOptionBeginFromCurrentState
+         | UIViewAnimationOptionTransitionCrossDissolve
+                        animations:showHintBlock
                         completion:nil];
     }
     else
@@ -388,6 +420,7 @@
         
         void (^showBlock)() = ^{
             [self updatePlaceholder];
+            self.hintLabel.text = self.hintText;
             self.hintLabel.alpha = 1.0f;
         };
         [UIView animateWithDuration:0.3f animations:showBlock];
@@ -414,11 +447,11 @@
     }
     else
     {
-        void (^hideHintBlock)() = ^{
+        void (^hideBlock)() = ^{
             [self updatePlaceholder];
             [self updateHint];
         };
-        [UIView animateWithDuration:0.3 animations:hideHintBlock];
+        [UIView animateWithDuration:0.3 animations:hideBlock];
     }
 }
 
@@ -489,9 +522,34 @@
 
 - (void) initLayer
 {
-    self.layer.borderWidth = 1.0f;
-    self.layer.cornerRadius = 6.0f;
-    self.layer.borderColor = [UIColor clearColor].CGColor;
+    if ( !self.validationBlock )
+    {
+        return;
+    }
+    
+    switch ( self.borderStyle )
+    {
+        case UITextBorderStyleRoundedRect:
+            self.layer.borderWidth = 1.0f;
+            self.layer.cornerRadius = 6.0f;
+            self.layer.borderColor = [UIColor clearColor].CGColor;
+            break;
+        case UITextBorderStyleLine:
+            self.layer.borderWidth = 1.0f;
+            self.layer.cornerRadius = 0.0f;
+            self.layer.borderColor = [UIColor clearColor].CGColor;
+            break;
+        case UITextBorderStyleBezel:
+            self.layer.borderWidth = 2.0f;
+            self.layer.cornerRadius = 0.0f;
+            self.layer.borderColor = [UIColor clearColor].CGColor;
+            break;
+        case UITextBorderStyleNone:
+            self.layer.borderWidth = 0.0f;
+            break;
+        default:
+            break;
+    }
 }
 
 - (void) showBorderWithColor:(UIColor*)color
