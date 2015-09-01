@@ -32,6 +32,25 @@ typedef NSDictionary *(^ValidationBlock)(LRTextField *textField, NSString *text)
 IB_DESIGNABLE
 @interface LRTextField : UITextField
 
+- (instancetype) initWithFrame:(CGRect)frame;
+
+/**
+ * Init with float label height
+ *
+ * @param frame The frame of text field
+ * @param labelHeight Height of float label when displayed above textfield
+ */
+- (instancetype) initWithFrame:(CGRect)frame labelHeight:(CGFloat)labelHeight;
+
+/**
+ * Init with float label height and pre-defined style
+ *
+ * @param frame The frame of text field
+ * @param labelHeight Height of float label when displayed above textfield
+ * @param style Pre-defined style
+ */
+- (instancetype) initWithFrame:(CGRect)frame labelHeight:(CGFloat)labelHeight style:(LRTextFieldStyle)style;
+
 /**
  * Style of text: email, phone, password
  * Default is nil.
@@ -40,12 +59,12 @@ IB_DESIGNABLE
 
 /**
  * Height of floating Label.
- * Default is 0.0f.
+ * Default is 0.5 * self.frame.height
  */
 @property (nonatomic, assign) IBInspectable CGFloat floatingLabelHeight;
 
 /**
- * Mask of input text.
+ * Mask of input text. '#' represent any single character input
  * Default is nil.
  */
 @property (nonatomic, copy) IBInspectable NSString *format;
@@ -85,18 +104,6 @@ IB_DESIGNABLE
  * Default is [UIColor grayColor].
  */
 @property (nonatomic, strong) IBInspectable UIColor *hintTextColor;
-
-
-
-- (instancetype) initWithFrame:(CGRect)frame labelHeight:(CGFloat)labelHeight;
-
-/**
- * Init with style.
- *
- * @param frame The frame of text field
- * @param style The style of text field
- */
-- (instancetype) initWithFrame:(CGRect)frame labelHeight:(CGFloat)labelHeight style:(LRTextFieldStyle)style;
 
 /**
  * Set validation block.

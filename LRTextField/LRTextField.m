@@ -282,9 +282,9 @@
     switch ( self.style )
     {
         case LRTextFieldStyleEmail:
-            self.placeholderText = @"Email";
+            self.placeholder = @"Email";
             self.format = nil;
-            _validationBlock = ^NSDictionary *(LRTextField *textField, NSString *text) {
+            self.validationBlock = ^NSDictionary *(LRTextField *textField, NSString *text) {
                 NSString *emailRegex = @"[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}";
                 NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
                 if ( ![emailTest evaluateWithObject:text] )
@@ -295,16 +295,13 @@
             };
             break;
         case LRTextFieldStylePhone:
-            self.placeholderText = @"Phone";
+            self.placeholder = @"Phone";
             self.keyboardType = UIKeyboardTypePhonePad;
-            self.format = @"###-###-####";
-            _validationBlock = nil;
+            self.format = @"(###)###-####";
             break;
         case LRTextFieldStylePassword:
-            self.placeholderText = @"Password";
+            self.placeholder = @"Password";
             self.secureTextEntry = YES;
-            self.format = nil;
-            _validationBlock = nil;
             break;
         default:
             break;
