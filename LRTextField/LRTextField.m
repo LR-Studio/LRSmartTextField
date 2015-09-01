@@ -519,11 +519,6 @@
 
 - (void) initLayer
 {
-    if ( !self.validationBlock )
-    {
-        return;
-    }
-    
     switch ( self.borderStyle )
     {
         case UITextBorderStyleRoundedRect:

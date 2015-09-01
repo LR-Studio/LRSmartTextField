@@ -56,7 +56,8 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-- (IBAction)hideKeyboardPressed:(id)sender {
+- (IBAction)hideKeyboardPressed:(id)sender
+{
     [self.view endEditing:YES];
 }
 
