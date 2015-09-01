@@ -2,6 +2,12 @@ LRTextField
 ===========
 A subclass of UITextField that supports float label, validation, inputmask, and `IB_DESIGNABLE` (Xcode 6).
 
+### How to install
+```
+pod 'LRTextField'
+```
+
+
 ### USAGE
 __Init with code__
 
@@ -46,11 +52,6 @@ __Init in Storyboard / Xib__
 
 ![SB-how](http://i.imgur.com/xz3PuX5.gif)
 
-
-### Pod
-```
-pod 'LRTextField'
-```
 
 ### CUSTOMIZE
 __Color__
