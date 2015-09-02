@@ -1,6 +1,6 @@
 LRTextField
 ===========
-A subclass of UITextField that supports float label, validation, inputmask, and `IB_DESIGNABLE` (Xcode 6).
+A subclass of UITextField that supports float label, validation, inputmask, and `IB_DESIGNABLE` (Xcode 6). The expectation is that our text field can offer great functionality, while keeping the original design.
 
 ### How to install
 ```
@@ -76,3 +76,4 @@ __Disable Animation__
     textFieldCustom.enableAnimation = NO;
 ```
 ### TROUBLESHOOTING
+Please send an email lrlrstudio@gmail.com
