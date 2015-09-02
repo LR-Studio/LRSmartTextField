@@ -70,7 +70,7 @@ __Color__
 
 __Disable Animation__
 
-![color](http://i.imgur.com/audSB0s.gif)
+![noanimation](http://i.imgur.com/aBJu8Ol.gif)
 
 ``` objc
     textFieldCustom.enableAnimation = NO;
