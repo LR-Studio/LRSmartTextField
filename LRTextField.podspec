@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|  
   s.name             = "LRTextField"  
-  s.version          = "1.1.1"  
+  s.version          = "1.1.2"  
   s.summary          = "UITextField with label, validation and input mask on iOS."  
   s.description      = <<-DESC  
                        UITextField with label, validation and input mask on iOS, which is implemented by Objective-C.  
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   # s.screenshots      = "www.example.com/screenshots_1", "www.example.com/screenshots_2"  
   s.license          = 'MIT'  
   s.author           = { "LR Studio" => "lrlrstudio@gmail.com" }  
-  s.source           = { :git => "https://github.com/LR-Studio/LRTextField.git", :tag => s.version.to_s }  
+  s.source           = { :git => "https://github.com/LR-Studio/LRSmartTextField.git", :tag => s.version.to_s }  
   # s.social_media_url = 'https://twitter.com/NAME'  
   
   s.platform     = :ios, '8.0'  
