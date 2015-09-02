@@ -386,7 +386,7 @@
 
 - (void) runDidBeginAnimation
 {
-    if ( self.text.length > 0 )
+    if ( self.text.length > 0 || !_enableAnimation)
     {
         void (^showPlaceholderBlock)() = ^{
             self.placeholderLabel.textColor = self.placeholderActiveColor;
@@ -426,7 +426,7 @@
 
 - (void) runDidEndAnimation
 {
-    if ( self.text.length > 0 )
+    if ( self.text.length > 0 || !_enableAnimation)
     {
         if ( self.validationBlock )
         {
