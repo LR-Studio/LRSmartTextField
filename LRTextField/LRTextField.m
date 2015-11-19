@@ -191,10 +191,14 @@
 {
     [self propertyInit];
     
+    self.backgroundColor = [UIColor clearColor];
+    
     self.placeholderLabel = [UILabel new];
+    self.placeholderLabel.backgroundColor = [UIColor clearColor];
     self.placeholderLabel.font = self.font;
     
     self.hintLabel = [UILabel new];
+    self.hintLabel.backgroundColor = [UIColor clearColor];
     self.hintLabel.font = self.font;
     
     [self updatePlaceholder];
@@ -218,7 +222,9 @@
     
     _enableAnimation = YES;
     _placeholderInactiveColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
-    _placeholderActiveColor = self.tintColor;
+    if ([[UIDevice currentDevice].systemVersion floatValue] >= 7) {
+        _placeholderActiveColor = self.tintColor;
+    }
     _hintText = nil;
     _hintTextColor = [[UIColor grayColor] colorWithAlphaComponent:0.7];
     _temporaryString = [NSString string];
