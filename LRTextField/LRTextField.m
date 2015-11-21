@@ -231,7 +231,7 @@
     _validationBlock = nil;
     self.clipsToBounds = NO;
     
-    //set color for validation text
+    //set default color for validation text
     _validationYesColor = [UIColor colorWithRed:35.0/255.0 green:199.0/255.0 blue:90.0/255.0 alpha:1.0];
     _validationNoColor = [UIColor colorWithRed:225.0/255.0 green:51.0/255.0 blue:40.0/255.0 alpha:1.0];
     
@@ -482,6 +482,13 @@
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSDictionary *validationInfo = weakSelf.validationBlock(weakSelf, weakSelf.rawText);
+        if ( [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR] ) {
+            _validationYesColor = [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR];
+        }
+        if ( [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR] ) {
+            _validationNoColor = [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR];
+        }
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [indicator stopAnimating];
             [weakSelf.rightView removeFromSuperview];
