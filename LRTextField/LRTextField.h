@@ -71,6 +71,30 @@ IB_DESIGNABLE
 @property (nonatomic, copy) IBInspectable NSString *format;
 
 /**
+ * Mask of input text. regex '^[A-Za-z0-9]{4,16}+$' represent any single character input
+ * Default is nil.
+ */
+@property (nonatomic, copy) IBInspectable NSString *regex;
+
+/**
+ * Mask of input text. regex enable validaton of editing end.
+ * Default is NO.
+ */
+@property (nonatomic, assign) IBInspectable BOOL enableRegexOfEnd;
+
+/**
+ * Text without mask. regex is NO show error message.
+ * Default is nil.
+ */
+@property (nonatomic, copy) IBInspectable NSString *errorMsg;
+
+/**
+ * Text without mask. regex is YES show success message.
+ * Default is nil.
+ */
+@property (nonatomic, copy) IBInspectable NSString *successMsg;
+
+/**
  * Text without mask.
  * Default is nil.
  */
@@ -112,5 +136,12 @@ IB_DESIGNABLE
  * @param block The block to be applied to validate input text and return valid and invalid output.
  */
 - (void) setValidationBlock:(ValidationBlock)block;
+
+/**
+ *  call method regex validation show message.
+ *
+ * @param nil
+ */
+- (void)validationRegexShowMsg;
 
 @end

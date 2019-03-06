@@ -75,7 +75,12 @@
 {
     if ( !_format )
     {
-        return self.text;
+        //修复线程异常 self.text
+        __block NSString *text = nil;
+        dispatch_async(dispatch_get_main_queue(), ^{
+             text = self.text;
+        });
+        return text;
     }
     
     NSMutableString *mutableStr = [NSMutableString stringWithString:self.text];
@@ -324,6 +329,9 @@
 
 - (IBAction) textFieldEdittingDidEndInternal:(UITextField *)sender
 {
+    if (self.enableRegexOfEnd) {
+        [self validationRegexShowMsg];
+    }
     [self autoFillFormat];
     [self runDidEndAnimation];
 }
@@ -470,6 +478,50 @@
 
 #pragma mark - Validation
 
+- (BOOL)validationRegex
+{
+    NSPredicate *regex = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", self.regex];
+    return [regex evaluateWithObject:self.text];
+}
+
+- (void)validationRegexShowMsg
+{
+    
+    
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    indicator.frame = CGRectMake(self.frame.size.width - self.frame.size.height,
+                                 0,
+                                 self.frame.size.height,
+                                 self.frame.size.height);
+    [self.layer addSublayer:indicator.layer];
+    [indicator startAnimating];
+    __weak typeof(self) weakSelf = self;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        
+        
+    });
+    
+    NSDictionary *validationInfo = nil;
+    if ([self validationRegex]) {
+        validationInfo = @{VALIDATION_INDICATOR_YES : self.successMsg};
+    } else {
+        validationInfo = @{VALIDATION_INDICATOR_NO : self.errorMsg};
+    }
+    if ( [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR] ) {
+        _validationYesColor = [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR];
+    }
+    if ( [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR] ) {
+        _validationNoColor = [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR];
+    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [indicator stopAnimating];
+        [weakSelf.rightView removeFromSuperview];
+        weakSelf.rightView = nil;
+        [self runValidationViewAnimation:validationInfo];
+    });
+}
+
 - (void) validateText
 {
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
@@ -480,8 +532,9 @@
     [self.layer addSublayer:indicator.layer];
     [indicator startAnimating];
     __weak typeof(self) weakSelf = self;
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSDictionary *validationInfo = weakSelf.validationBlock(weakSelf, weakSelf.rawText);
+        NSDictionary *validationInfo = weakSelf.validationBlock(weakSelf, self.rawText);
         if ( [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR] ) {
             _validationYesColor = [validationInfo objectForKey:VALIDATION_INDICATOR_COLOR];
         }
