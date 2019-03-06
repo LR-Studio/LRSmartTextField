@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|  
   s.name             = "LRTextField"  
-  s.version          = "1.1.3"  
+  s.version          = "1.1.4"  
   s.summary          = "UITextField with label, validation and input mask on iOS."  
   s.description      = <<-DESC  
                        UITextField with label, validation and input mask on iOS, which is implemented by Objective-C.  
